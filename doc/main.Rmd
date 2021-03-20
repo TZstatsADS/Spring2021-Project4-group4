@@ -1,0 +1,224 @@
+---
+title: "Project 4: Causal Inference Algorithms Evaluation"
+subtitle: "Group 4"
+author: "Jingbin Cao, Aurore Gosmant, James Smiley, Weiwei Song, Zikun Zhuang"
+output:
+  pdf_document: default
+  toc: yes
+html_notebook: default
+header-includes:
+    - \usepackage{xcolor}
+df_print: paged
+---
+# Basic Setup
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = F, warning = F,
+                      options(width = 60),
+                      matrix(runif(100), ncol = 20))
+```
+
+```{r load libraries and data, message=FALSE, warning=FALSE}
+#Test Branch created
+if(!require("readr")){
+  install.packages("readr")
+}
+if(!require("tidyverse")){
+  install.packages("tidyverse")
+}
+if(!require("glmnet")){
+  install.packages("glmnet")
+}
+if(!require("pryr")){
+  install.packages("pryr")
+}
+
+library(readr)
+library(tidyverse)
+library(glmnet)
+library(pryr)
+
+lowDim <- read_csv('../data/lowDim_dataset.csv')
+highDim <- read_csv('../data/highDim_dataset.csv')
+
+# Prepare Data
+Y_high <-highDim$Y
+X_high <-highDim%>% select(-Y, -A) %>% as.matrix
+A_high <-highDim$A
+
+Y_low <- lowDim$Y
+A_low <- lowDim$A
+X_low <- lowDim%>% select(-Y, -A) %>% as.matrix
+```
+
+# Project Overview
+
+We will evaluate four inference algorithm in this project, Inverse Propensity Weighting (IPW) + Logistic Regression, Regression Estimate, Stratification + Logistic Regression, and Regression Adjustment + Logistic Regression. We will compute the average treatment effect (ATE) using the four algorithms on two distinct datasets (low dimension & high dimension), and we will compare their performance and computational efficiency. 
+
+# Model 1: Inverse Propensity Weighting and Logistic Regression
+
+Some brief introduction...
+
+```{r}
+set.seed(0)
+```
+```{r}
+matrix(c(),
+       nrow = 2,byrow = TRUE,
+       dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
+```
+
+
+# Model 2: Regression Estimate
+
+Some brief introduction... 
+
+```{r}
+set.seed(0)
+ld <- lowDim %>% mutate(A = factor(A))
+hd <- highDim %>% mutate(A = factor(A))
+Regression_Estimate <- function(df){
+  df_X <- df%>% select(-Y,-A)
+  start <- Sys.time()
+  m0 <- glm(Y ~ ., data = subset(df[df$A==0,], select = -A))
+  m1 <- glm(Y ~ ., data = subset(df[df$A==1,], select = -A))
+  Y_pred_0 <- predict(m0, newdata = df_X)
+  Y_pred_1 <- predict(m1, newdata = df_X)
+  df <- df %>% mutate(Y_pred1 = Y_pred_1, Y_pred0 = Y_pred_0)
+  n <- nrow(df)
+  ATE = 1/n * sum(df$Y_pred1 - df$Y_pred0)
+  end <- Sys.time()
+  runtime = end - start
+  return(list(ATE = ATE, runtime = runtime))
+}
+
+matrix(c(Regression_Estimate(hd)$ATE,
+         Regression_Estimate(ld)$ATE,
+         Regression_Estimate(hd)$runtime,
+         Regression_Estimate(ld)$runtime),
+         nrow = 2,
+         byrow = TRUE,
+         dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
+```
+
+# Model 3: Stratification and Logistic Regression
+
+Some Brief introduction...
+
+```{r}
+set.seed(0)
+
+
+matrix(c(),
+       nrow = 2,
+       byrow = TRUE,
+       dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
+```
+
+# Model 4: Regression Adjustment and Logistic Regression
+
+Some Breif introduction...
+
+```{r}
+set.seed(0)
+
+matrix(c(),
+       nrow = 2,
+       byrow = TRUE,
+       dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
+```
+
+
+# Model Comparisons
+
+## True Average Treatment Effect (ATE)
+
+```{r echo=FALSE}
+set.seed(0)
+true_ate <- data.frame(
+                       dataset = c("Low Dim.", "High Dim."),
+                       True_ATE = c()
+                       )
+knitr::kable(true_ate)
+```
+
+Performance = squared difference of true ATE and estimated ATE
+Run time (in seconds)
+```{r Comparing Result, echo=FALSE}
+high_dim_result <- data.frame(
+                               Model = c("Inverse Propensity Weighting (IPW) + Logistic Regression", 
+                                         "Regression Estimate", "Stratification + Logistic Regression", 
+                                         "egression Adjustment + Logistic Regression"),
+                               ATE = c(),
+                               Run_Time = c(),
+                               Performance = c()
+                               )
+low_dim_result <- data.frame(
+                               Model = c("Inverse Propensity Weighting (IPW) + Logistic Regression", 
+                                         "Regression Estimate", "Stratification + Logistic Regression", 
+                                         "Regression Adjustment + Logistic Regression"),
+                               ATE = c(),
+                               Run_Time = c(),
+                               Performance = c()
+                               )
+``` 
+
+## Low Dimension Dataset
+```{r echo=FALSE}
+
+```
+
+## High Dimension Dataset
+```{r echo=FALSE}
+
+```
+
+Model xxx has the best performance on Low Dimension Dataset; model xxx has the best performance on High Dimension Dataset.
+
+\newpage
+```{r echo=FALSE}
+high_results <- high_results %>% 
+  mutate(dim = 'high') %>% 
+  mutate(Model = c("IPW +\n Logistic Regression", 
+                   "Regression Estimate",
+                   "Weighted Regression +\n Logistic Regression", 
+                   "Regression Adjustment +\n Logistic Regression")) %>% 
+  mutate(true_ATE = -3)
+low_results <- low_results %>% 
+  mutate(dim = 'low') %>% 
+  mutate(Model = c("IPW +\n Logistic Regression", 
+                   "Regression Estimate",
+                   "Weighted Regression +\n Logistic Regression", 
+                   "Regression Adjustment +\n Logistic Regression")) %>% 
+  mutate(true_ATE = 2.5)
+results <- rbind(low_results, high_results)
+
+#plots
+ggplot(results, aes(Model, ATE, group=dim, col = dim)) +
+  geom_point() +
+  geom_line()+
+  labs(title='ATE of Different Models',
+       x='',
+       y='',
+       col='Dimension') +
+  geom_text(aes(label=as.character(round(ATE, 3))), nudge_y = 0.2)+
+  theme_light()
+
+ggplot(results, aes(Model, Performance, group=dim, col = dim)) +
+  geom_point() +
+  geom_line()+
+  labs(title='Performance of Different Models',
+       x='',
+       y='Sqrt. Error',
+       col='Dimension') +
+  theme_light()
+
+ggplot(results, aes(Model, Run.Time, group=dim, col = dim)) +
+  geom_point() +
+  geom_line()+
+  labs(title='Run Time of Different Models',
+       x='',
+       y='Run Time (in seconds)',
+       col='Dimension') +
+  theme_light()
+```
+
