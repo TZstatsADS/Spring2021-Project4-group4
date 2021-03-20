@@ -13,7 +13,7 @@ Term: Spring 2021
 	+ Song, Weiwei: ws2621@columbia.edu
 	+ Zhuang, Zikun: zz2762@columbia.edu   
 
-+ Project summary: 
++ Project summary:  Pairing Combination: 10,15,16,22. Compare IPW, Regression Estimate, Stratification, and Regression Adjustment where PS is based on boosted stumps.
 	
 **Contribution statement**: 
 
