@@ -7,11 +7,11 @@ Term: Spring 2021
 + Team Group4
 + Projec title: Causal Inference
 + Team members
-	+ Cao, Jingbin jc5514@columbia.edu
-	+ Gosmant, Aurore apg2170@columbia.edu
-	+ Smiley, James jbs2253@columbia.edu
-	+ Song, Weiwei ws2621@columbia.edu
-	+ Zhuang, Zikun zz2762@columbia.edu   
+	+ Cao, Jingbin: jc5514@columbia.edu
+	+ Gosmant, Aurore: apg2170@columbia.edu
+	+ Smiley, James: jbs2253@columbia.edu
+	+ Song, Weiwei: ws2621@columbia.edu
+	+ Zhuang, Zikun: zz2762@columbia.edu   
 
 + Project summary: 
 	
