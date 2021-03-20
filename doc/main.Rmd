@@ -60,8 +60,13 @@ Some brief introduction...
 
 ```{r}
 set.seed(0)
-```
-```{r}
+# Define Data
+
+# Write Algorithm
+IPW <- function(){
+  
+}
+# Output Performance
 matrix(c(),
        nrow = 2,byrow = TRUE,
        dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
@@ -74,8 +79,11 @@ Some brief introduction...
 
 ```{r}
 set.seed(0)
+#Define Data
 ld <- lowDim %>% mutate(A = factor(A))
 hd <- highDim %>% mutate(A = factor(A))
+
+# Write Algorithm
 Regression_Estimate <- function(df){
   df_X <- df%>% select(-Y,-A)
   start <- Sys.time()
@@ -91,6 +99,7 @@ Regression_Estimate <- function(df){
   return(list(ATE = ATE, runtime = runtime))
 }
 
+# Output Performance
 matrix(c(Regression_Estimate(hd)$ATE,
          Regression_Estimate(ld)$ATE,
          Regression_Estimate(hd)$runtime,
@@ -106,8 +115,13 @@ Some Brief introduction...
 
 ```{r}
 set.seed(0)
+# Define Data
 
-
+# Write Algorithm
+Strat <- function(){
+  
+}
+# Output Performance
 matrix(c(),
        nrow = 2,
        byrow = TRUE,
@@ -120,7 +134,13 @@ Some Breif introduction...
 
 ```{r}
 set.seed(0)
+# Define Data
 
+# Write Algorithm
+Reg_adj <- function(){
+  
+}
+# Output Performance
 matrix(c(),
        nrow = 2,
        byrow = TRUE,
@@ -148,32 +168,58 @@ high_dim_result <- data.frame(
                                Model = c("Inverse Propensity Weighting (IPW) + Logistic Regression", 
                                          "Regression Estimate", "Stratification + Logistic Regression", 
                                          "egression Adjustment + Logistic Regression"),
-                               ATE = c(),
-                               Run_Time = c(),
-                               Performance = c()
+                               
+                               ATE = c(IPW.High.ATE ,
+                                       Regression_Estimate(hd)$ATE,
+                                       Strat.High.ATE,
+                                       Reg_adj.High.ATE),
+                                       
+                               Run_Time = c(IPW.High.ATE,
+                                            Regression_Estimate(hd)$runtime[[1]],
+                                            Strat.High.ATE,
+                                            Reg_adj.High.ATE),
+                               
+                               Performance = c(sqrt(abs(-3-IPW.High.ATE)),
+                                               sqrt(abs(-3-Regression_Estimate(hd)$ATE)),
+                                               sqrt(abs(-3-Strat.High.ATE)),
+                                               sqrt(abs(-3-Reg_adj.High.ATE)))
                                )
+
 low_dim_result <- data.frame(
                                Model = c("Inverse Propensity Weighting (IPW) + Logistic Regression", 
                                          "Regression Estimate", "Stratification + Logistic Regression", 
-                                         "Regression Adjustment + Logistic Regression"),
-                               ATE = c(),
-                               Run_Time = c(),
-                               Performance = c()
+                                         "egression Adjustment + Logistic Regression"),
+                               
+                               ATE = c(IPW.Low.ATE ,
+                                       Regression_Estimate(ld)$ATE,
+                                       Strat.Low.ATE,
+                                       Reg_adj.Low.ATE),
+                                       
+                               Run_Time = c(IPW.Low.ATE,
+                                            Regression_Estimate(ld)$runtime[[1]],
+                                            Strat.Low.ATE,
+                                            Reg_adj.Low.ATE),
+                               
+                               Performance = c(sqrt(abs(-3-IPW.Low.ATE)),
+                                               sqrt(abs(-3-Regression_Estimate(ld)$ATE)),
+                                               sqrt(abs(-3-Strat.Low.ATE)),
+                                               sqrt(abs(-3-Reg_adj.Low.ATE)))
                                )
 ``` 
 
 ## Low Dimension Dataset
 ```{r echo=FALSE}
-
+knitr::kable(low_dim_result)
 ```
 
 ## High Dimension Dataset
 ```{r echo=FALSE}
-
+knitr::kable(high_dim_result)
 ```
 
 Model xxx has the best performance on Low Dimension Dataset; model xxx has the best performance on High Dimension Dataset.
 
+# Ploting the Result
 \newpage
 ```{r echo=FALSE}
 high_results <- high_results %>% 
@@ -182,14 +228,14 @@ high_results <- high_results %>%
                    "Regression Estimate",
                    "Weighted Regression +\n Logistic Regression", 
                    "Regression Adjustment +\n Logistic Regression")) %>% 
-  mutate(true_ATE = -3)
+  mutate(true_ATE = )
 low_results <- low_results %>% 
   mutate(dim = 'low') %>% 
   mutate(Model = c("IPW +\n Logistic Regression", 
                    "Regression Estimate",
                    "Weighted Regression +\n Logistic Regression", 
                    "Regression Adjustment +\n Logistic Regression")) %>% 
-  mutate(true_ATE = 2.5)
+  mutate(true_ATE = )
 results <- rbind(low_results, high_results)
 
 #plots
