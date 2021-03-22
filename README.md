@@ -13,7 +13,7 @@ Term: Spring 2021
 	+ Song, Weiwei: ws2621@columbia.edu
 	+ Zhuang, Zikun: zz2762@columbia.edu   
 
-+ Project summary:  Pairing Combination: 10,15,16,22. Compare Inverse Propensity Weighting (PS: Logistic Regression), Regression Estimate (doesn't need PS), Stratification (PS: Logistic Regression), and Regression Adjustment (PS: Logistic Regression) where PS is based on boosted stumps.
++ Project summary:  Pairing Combination: 10,15,16,22. Compare Inverse Propensity Weighting (PS: Logistic Regression), Regression Estimate (doesn't need PS), Stratification (PS: Logistic Regression), and Regression Adjustment (PS: Logistic Regression).
 
 Performance - 
 
