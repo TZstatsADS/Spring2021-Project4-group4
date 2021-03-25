@@ -54,6 +54,21 @@ X_low <- lowDim%>% select(-Y, -A) %>% as.matrix
 
 We will evaluate four inference algorithm in this project, Inverse Propensity Weighting (IPW) + Logistic Regression, Regression Estimate, Stratification + Logistic Regression, and Regression Adjustment + Logistic Regression. We will compute the average treatment effect (ATE) using the four algorithms on two distinct datasets (low dimension & high dimension), and we will compare their performance and computational efficiency. 
 
+# Getting Propensity Scores
+We estimate the propensity scores using logistic regression:  
+\[logit[Pr(T=1|X)]=\beta_0 + \beta_1x_1 + ... + \beta_px_p
+\]
+\[
+Pr(T=1|X)=\frac{1}{1+e^{-(\beta_0+\beta_1x_1+...+\beta_px_p)}}
+\]
+
+```{r Getting PS}
+# High Dimentional Data
+
+# Low Dimentional Data
+```
+
+
 # Model 1: Inverse Propensity Weighting and Logistic Regression
 
 Some brief introduction...
