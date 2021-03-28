@@ -66,6 +66,7 @@ Pr(T=1|X)=\frac{1}{1+e^{-(\beta_0+\beta_1x_1+...+\beta_px_p)}}
 # High Dimentional Data
 
 # Low Dimentional Data
+
 ```
 
 
