@@ -37,8 +37,11 @@ library(tidyverse)
 library(glmnet)
 library(pryr)
 
-lowDim <- read_csv('../data/lowDim_dataset.csv')
-highDim <- read_csv('../data/highDim_dataset.csv')
+lowDim_raw <- read_csv('../data/lowDim_dataset.csv')
+highDim_raw <- read_csv('../data/highDim_dataset.csv')
+
+lowDim <- lowDim_raw
+highDim <- highDim_raw
 
 # Prepare Data
 Y_high <-highDim$Y
@@ -62,17 +65,64 @@ We estimate the propensity scores using logistic regression:
 Pr(T=1|X)=\frac{1}{1+e^{-(\beta_0+\beta_1x_1+...+\beta_px_p)}}
 \]
 
-```{r Getting PS}
+```{r Getting PS, message=FALSE}
 # High Dimentional Data
+ps_high_estimate <- glm(data = highDim,
+                        formula = A~ . -Y,
+                        family=binomial())
+
+ps_high_data <- data.frame(ps = predict(ps_high_estimate,type="response"),
+                        treatment = ps_high_estimate$model$A)
+
 
 # Low Dimentional Data
+ps_low_estimate <- glm(data = lowDim,
+                       formula = A~ . -Y,
+                       family=binomial())
+
+ps_low_data <- data.frame(ps = predict(ps_low_estimate,type="response"),
+                        treatment = ps_low_estimate$model$A)
+
+# Visualize Data
+## Show PS means
+(ps_means <- data.frame(high_treat_ps_mean = mean(ps_high_data[ps_high_data$treatment==1,]$ps),
+                       high_control_ps_mean = mean(ps_high_data[ps_high_data$treatment==0,]$ps),
+                       low_treat_ps_mean = mean(ps_low_data[ps_low_data$treatment==1,]$ps),
+                       low_control_ps_mean = mean(ps_low_data[ps_low_data$treatment==0,]$ps)))
+
+## Plot Counts
+ps_high_data %>% 
+  mutate(treatment = ifelse(treatment == 0, "Control Group", "Treatment Group")) %>%
+  ggplot(aes(x=ps))+
+  ggtitle("High Dimentional Data")+
+  xlab("Propensity Scores")+
+  ylab("Count")+
+  geom_histogram(color="white")+
+  facet_wrap(~treatment)
+
+ps_low_data %>% 
+  mutate(treatment = ifelse(treatment == 0, "Control Group", "Treatment Group")) %>%
+  ggplot(aes(x=ps))+
+  ggtitle("Low Dimential Data")+
+  xlab("Propensity Scores")+
+  ylab("Count")+
+  geom_histogram(color="white")+
+  facet_wrap(~treatment)
 ```
 
 
 # Model 1: Inverse Propensity Weighting and Logistic Regression
+\[
+w_i = \frac{T_i}{e_i}+\frac{1=T_i}{1-\hat{e_i}}
+\] 
+where $\hat{e_i}$ is the estimated propensity score for individual $i$.  
+Estimate ATE:  
+\[
+\hat{\triangle}_{IPW} = N^{-1}(\sum\limits_{i \in Treated}{w_iY_i}-\sum\limits_{i \in Controlled}{w_iY_i})
+\]
+where the first summation is from the treated group, and the second summation is from the controlled group.  
 
 Some brief introduction...
-
 ```{r}
 set.seed(0)
 # Define Data
@@ -89,6 +139,11 @@ matrix(c(),
 
 
 # Model 2: Regression Estimate
+
+\[
+\hat{\triangle}_{reg} = N^{-1}\sum\limits_{i=1}\limits^{N}(\hat{m_1}-\hat{m_0}{(X_i)})
+\]
+No need for Propensity Score.  
 
 Some brief introduction... 
 
@@ -126,7 +181,15 @@ matrix(c(Regression_Estimate(hd)$ATE,
 
 # Model 3: Stratification and Logistic Regression
 
-Some Brief introduction...
+\[
+\hat{\triangle}_S = \sum\limits^K\limits_{j = 1} \frac{N_j}{N}(N_{1j}^{-1} \sum\limits^{N}\limits_{i=1}T_iY_iI(\hat{e}_i \in \hat{Q_j})-N_{0j}^{-1}\sum\limits^{N}\limits_{i=1}(1-T_i)Y_iI(\hat{e}_i \in \hat{Q}_j))
+\]
+where $K$ is the number of strata (K=5).  
+$N_j$ is the number of individuals in stratum $j$.  
+$N_{1j}$ is the number of "treated" individuals in stratum $j$, and $N_{0j}$ is the number of "controlled" individuals in stratum $j$.  
+$\hat{Q}_j=(\hat{q}_{j-1},\hat{q}_j)$ where $\hat{q}_j$ is the jth sample quantile of the estimated propensity scores.  
+
+Some brief introduction...
 
 ```{r}
 set.seed(0)
@@ -145,7 +208,9 @@ matrix(c(),
 
 # Model 4: Regression Adjustment and Logistic Regression
 
-Some Breif introduction...
+Regress the outcome variable Y on treatment indicator variable T and the estimated propensity score. Then, the estimated coefficient on the treatment indicator variable would be an estimate of ATE.  
+
+Some brief introduction...
 
 ```{r}
 set.seed(0)
@@ -282,4 +347,10 @@ ggplot(results, aes(Model, Run.Time, group=dim, col = dim)) +
        col='Dimension') +
   theme_light()
 ```
+
+# Reference
+
+Austin, Peter C. 2011. “An Introduction to Propensity Score Methods for Reducing the Effects of Confounding in Observational Studies.” Multivariate Behavioral Research 46 (3): 399–424.  
+Lunceford, Jared K, and Marie Davidian. 2004. “Stratification and Weighting via the Propensity Score in Estimation of Causal Treatment Effects a Comparative Study.” Statistics in Medicine 23 (19): 2937–60.  
+Stuart, Elizabeth A. 2010. “Matching Methods for Causal Inference: A Review and a Look Forward.” Statistical Science: A Review Journal of the Institute of Mathematical Statistics 25 (1): 1.  
 
