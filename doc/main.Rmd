@@ -258,12 +258,12 @@ high_dim_result <- data.frame(
                                          "egression Adjustment + Logistic Regression"),
                                
                                ATE = c(IPW.High.ATE ,
-                                       Regression_Estimate(hd)$ATE,
+                                       Regression_Estimate(highDim)$ATE,
                                        Strat.High.ATE,
                                        Reg_adj.High.ATE),
                                        
                                Run_Time = c(IPW.High.ATE,
-                                            Regression_Estimate(hd)$runtime[[1]],
+                                            Regression_Estimate(highDim)$runtime[[1]],
                                             Strat.High.ATE,
                                             Reg_adj.High.ATE),
                                
@@ -280,12 +280,12 @@ low_dim_result <- data.frame(
                                          "egression Adjustment + Logistic Regression"),
                                
                                ATE = c(IPW.Low.ATE ,
-                                       Regression_Estimate(ld)$ATE,
+                                       Regression_Estimate(lowDim)$ATE,
                                        Strat.Low.ATE,
                                        Reg_adj.Low.ATE),
                                        
                                Run_Time = c(IPW.Low.ATE,
-                                            Regression_Estimate(ld)$runtime[[1]],
+                                            Regression_Estimate(lowDim)$runtime[[1]],
                                             Strat.Low.ATE,
                                             Reg_adj.Low.ATE),
                                
