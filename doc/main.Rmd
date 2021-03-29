@@ -72,7 +72,7 @@ ps_high_estimate <- glm(data = highDim,
                         family=binomial())
 
 ps_high_data <- data.frame(ps = predict(ps_high_estimate,type="response"),
-                        treatment = ps_high_estimate$model$A)
+                           treatment = ps_high_estimate$model$A)
 
 
 # Low Dimentional Data
@@ -81,7 +81,7 @@ ps_low_estimate <- glm(data = lowDim,
                        family=binomial())
 
 ps_low_data <- data.frame(ps = predict(ps_low_estimate,type="response"),
-                        treatment = ps_low_estimate$model$A)
+                          treatment = ps_low_estimate$model$A)
 
 # Visualize Data
 ## Show PS means
@@ -129,7 +129,11 @@ set.seed(0)
 
 # Write Algorithm
 IPW <- function(){
-  
+  start = Sys.time()
+  ATE =  
+  end = Sys.time()
+  runtime = end - start
+  return(list(ATE = ATE, runtime = runtime))
 }
 # Output Performance
 matrix(c(),
@@ -149,10 +153,6 @@ Some brief introduction...
 
 ```{r}
 set.seed(0)
-#Define Data
-ld <- lowDim %>% mutate(A = factor(A))
-hd <- highDim %>% mutate(A = factor(A))
-
 # Write Algorithm
 Regression_Estimate <- function(df){
   df_X <- df%>% select(-Y,-A)
@@ -162,18 +162,17 @@ Regression_Estimate <- function(df){
   Y_pred_0 <- predict(m0, newdata = df_X)
   Y_pred_1 <- predict(m1, newdata = df_X)
   df <- df %>% mutate(Y_pred1 = Y_pred_1, Y_pred0 = Y_pred_0)
-  n <- nrow(df)
-  ATE = 1/n * sum(df$Y_pred1 - df$Y_pred0)
+  ATE = 1/nrow(df) * sum(df$Y_pred1 - df$Y_pred0)
   end <- Sys.time()
   runtime = end - start
   return(list(ATE = ATE, runtime = runtime))
 }
 
 # Output Performance
-matrix(c(Regression_Estimate(hd)$ATE,
-         Regression_Estimate(ld)$ATE,
-         Regression_Estimate(hd)$runtime,
-         Regression_Estimate(ld)$runtime),
+matrix(c(Regression_Estimate(highDim)$ATE,
+         Regression_Estimate(lowDim)$ATE,
+         Regression_Estimate(highDim)$runtime,
+         Regression_Estimate(lowDim)$runtime),
          nrow = 2,
          byrow = TRUE,
          dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
@@ -197,7 +196,11 @@ set.seed(0)
 
 # Write Algorithm
 Strat <- function(){
-  
+  start = Sys.time()
+  ATE = 
+  end = Sys.time()
+  runtime = end - start
+  return(list(ATE = ATE, runtime = runtime))
 }
 # Output Performance
 matrix(c(),
@@ -218,7 +221,11 @@ set.seed(0)
 
 # Write Algorithm
 Reg_adj <- function(){
-  
+  start <- Sys.time()
+  ATE <- 
+  end <- Sys.time()
+  runtime <- end - start
+  return(list(ATE = ATE, runtime = runtime))
 }
 # Output Performance
 matrix(c(),
@@ -246,7 +253,8 @@ Run time (in seconds)
 ```{r Comparing Result, echo=FALSE}
 high_dim_result <- data.frame(
                                Model = c("Inverse Propensity Weighting (IPW) + Logistic Regression", 
-                                         "Regression Estimate", "Stratification + Logistic Regression", 
+                                         "Regression Estimate", 
+                                         "Stratification + Logistic Regression", 
                                          "egression Adjustment + Logistic Regression"),
                                
                                ATE = c(IPW.High.ATE ,
@@ -267,7 +275,8 @@ high_dim_result <- data.frame(
 
 low_dim_result <- data.frame(
                                Model = c("Inverse Propensity Weighting (IPW) + Logistic Regression", 
-                                         "Regression Estimate", "Stratification + Logistic Regression", 
+                                         "Regression Estimate", 
+                                         "Stratification + Logistic Regression", 
                                          "egression Adjustment + Logistic Regression"),
                                
                                ATE = c(IPW.Low.ATE ,
