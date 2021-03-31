@@ -42,15 +42,6 @@ highDim_raw <- read_csv('../data/highDim_dataset.csv')
 
 lowDim <- lowDim_raw
 highDim <- highDim_raw
-
-# Prepare Data
-Y_high <-highDim$Y
-X_high <-highDim%>% select(-Y, -A) %>% as.matrix
-A_high <-highDim$A
-
-Y_low <- lowDim$Y
-A_low <- lowDim$A
-X_low <- lowDim%>% select(-Y, -A) %>% as.matrix
 ```
 
 # Project Overview
@@ -122,7 +113,6 @@ Estimate ATE:
 \]
 where the first summation is from the treated group, and the second summation is from the controlled group.  
 
-Some brief introduction...
 ```{r}
 set.seed(0)
 # Define Data
@@ -156,20 +146,17 @@ matrix(c(IPW(highDim,ps_high_data)$ATE,
 \]
 No need for Propensity Score.  
 
-Some brief introduction...
-
 ```{r}
 set.seed(0)
 # Write Algorithm
 Regression_Estimate <- function(df){
   df_X <- df%>% select(-Y,-A)
   start <- Sys.time()
-  m0 <- glm(Y ~ ., data = subset(df[df$A==0,], select = -A))
-  m1 <- glm(Y ~ ., data = subset(df[df$A==1,], select = -A))
-  Y_pred_0 <- predict(m0, newdata = df_X)
-  Y_pred_1 <- predict(m1, newdata = df_X)
-  df <- df %>% mutate(Y_pred1 = Y_pred_1, Y_pred0 = Y_pred_0)
-  ATE = 1/nrow(df) * sum(df$Y_pred1 - df$Y_pred0)
+  model_0 <- glm(Y ~ ., data = subset(df[df$A==0,], select = -A))
+  model_1 <- glm(Y ~ ., data = subset(df[df$A==1,], select = -A))
+  Y0_pred <- predict(model_0, newdata = df%>% select(-Y,-A))
+  Y1_pred <- predict(model_1, newdata = df%>% select(-Y,-A))
+  ATE = 1/nrow(df) * sum(Y1_pred - Y0_pred)
   end <- Sys.time()
   runtime = end - start
   return(list(ATE = ATE, runtime = runtime))
@@ -241,10 +228,10 @@ Reg_adj <- function(df,ps_data){
   return(list(ATE = ATE, runtime = runtime))
 }
 # Output Performance
-matrix(c(Reg_adj(hd,ps_high_data)$ATE,
-         Reg_adj(ld,ps_low_data)$ATE,
-         Reg_adj(hd,ps_high_data)$runtime,
-         Reg_adj(ld,ps_high_data)$runtime),
+matrix(c(Reg_adj(highDim,ps_high_data)$ATE,
+         Reg_adj(lowDim,ps_low_data)$ATE,
+         Reg_adj(highDim,ps_high_data)$runtime,
+         Reg_adj(lowDim,ps_high_data)$runtime),
        nrow = 2,
        byrow = TRUE,
        dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
