@@ -1,7 +1,7 @@
 ---
 title: "Project 4: Causal Inference Algorithms Evaluation"
 subtitle: "Group 4"
-author: "Jingbin Cao, Aurore Gosmant, James Smiley, Weiwei Song, Zikun Zhuang"
+author: "Jingbin Cao, Pin-Chun Chen, Aurore Gosmant, Weiwei Song, Zikun Zhuang"
 output:
   pdf_document: default
   toc: yes
@@ -113,7 +113,7 @@ ps_low_data %>%
 
 # Model 1: Inverse Propensity Weighting and Logistic Regression
 \[
-w_i = \frac{T_i}{e_i}+\frac{1=T_i}{1-\hat{e_i}}
+w_i = \frac{T_i}{\hat{e_i}}+\frac{1-T_i}{1-\hat{e_i}}
 \]
 where $\hat{e_i}$ is the estimated propensity score for individual $i$.  
 Estimate ATE:  
@@ -128,18 +128,25 @@ set.seed(0)
 # Define Data
 
 # Write Algorithm
-IPW <- function(){
-  start = Sys.time()
-  ATE =  
-  end = Sys.time()
+IPW <- function(df,ps){
+  start <- Sys.time()
+  ps['weights'] <- df$A/ps$ps+(1-df$A)/(1-ps$ps)
+  treatment <- sum(ps[ps$treatment==1,]$weights*df$Y[df$A==1])
+  controll <- sum(ps[ps$treatment==0,]$weights*df$Y[df$A==0])
+  ATE <- (treatment-controll)/nrow(df)
+  end <- Sys.time()
   runtime = end - start
-  return(list(ATE = ATE, runtime = runtime))
+  return(list(ATE=ATE,runtime=runtime))
 }
 # Output Performance
-matrix(c(),
+matrix(c(IPW(highDim,ps_high_data)$ATE,
+         IPW(lowDim,ps_low_data)$ATE,
+         IPW(highDim,ps_high_data)$runtime,
+         IPW(lowDim,ps_low_data)$runtime),
        nrow = 2,byrow = TRUE,
        dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
 ```
+
 
 
 # Model 2: Regression Estimate
