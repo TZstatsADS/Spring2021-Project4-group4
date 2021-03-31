@@ -126,14 +126,13 @@ Some brief introduction...
 ```{r}
 set.seed(0)
 # Define Data
-ld <- lowDim %>% mutate(A = factor(A))
-hd <- highDim %>% mutate(A = factor(A))
+
 # Write Algorithm
 IPW <- function(df,ps){
   start <- Sys.time()
-  ps['weights'] <- ps$treatment/ps$ps+(1-ps$treatment)/(1-ps$ps)
-  treatment <- sum(ps$weights[ps$treatment==1]*df$Y[df$A==1])
-  controll <- sum(ps$weights[ps$treatment==0]*df$Y[df$A==0])
+  ps['weights'] <- df$A/ps$ps+(1-df$A)/(1-ps$ps)
+  treatment <- sum(ps[ps$treatment==1,]$weights*df$Y[df$A==1])
+  controll <- sum(ps[ps$treatment==0,]$weights*df$Y[df$A==0])
   ATE <- (treatment-controll)/nrow(df)
 #  ATE <- (sum(ps$weights[ps$treatment==1]*df$Y[df$A==1])-sum(ps$weights[ps$treatment==0]*df$Y[df$A==0]))/nrow(df)
   end <- Sys.time()
@@ -141,13 +140,14 @@ IPW <- function(df,ps){
   return(list(ATE=ATE,runtime=runtime))
 }
 # Output Performance
-matrix(c(IPW(hd,ps_high_data)$ATE,
-         IPW(ld,ps_low_data)$ATE,
-         IPW(hd,ps_high_data)$runtime,
-         IPW(ld,ps_low_data)$runtime),
+matrix(c(IPW(highDim,ps_high_data)$ATE,
+         IPW(lowDim,ps_low_data)$ATE,
+         IPW(highDim,ps_high_data)$runtime,
+         IPW(lowDim,ps_low_data)$runtime),
        nrow = 2,byrow = TRUE,
        dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
 ```
+
 
 
 # Model 2: Regression Estimate
