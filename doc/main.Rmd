@@ -196,7 +196,9 @@ set.seed(0)
 # Define Data
 
 # Write Algorithm
-Strat <- function(){
+Strat <- function(df){
+
+  
   
 }
 # Output Performance
@@ -209,19 +211,32 @@ matrix(c(),
 # Model 4: Regression Adjustment and Logistic Regression
 
 Regress the outcome variable Y on treatment indicator variable T and the estimated propensity score. Then, the estimated coefficient on the treatment indicator variable would be an estimate of ATE.  
+In this method, we regress the response variable ($Y$) with the treatment variable ($A$) and the propensity scores estimated using our model above, in this case, logistic regression. The estimated coefficient of the treatment variable ($A$) is then an estimate of the ATE. 
 
-Some brief introduction...
+D’Agostino (1998) and Austin (2011) compare regression adjustment with more traditional propensity score methods. One of the main advantages of the regression adjustment is in its simplicity in execution, in which one performs a somewhat basic linear regression model on two covariates and one response variable. 
 
+However, depending on the size of the dataset, this may run into computation issues as linear regression involves finding the inverse of a matrix. Additionally, regression adjustment may also not be helpful in cases where there is a strong separation between the two groups. 
+
+No such issues were present in this setup given that both datasets had a relatively small number of observations and there is no clear separation between the two groups
 ```{r}
 set.seed(0)
 # Define Data
 
 # Write Algorithm
-Reg_adj <- function(){
-  
+Reg_adj <- function(df,ps_data){
+  df<- data.frame(cbind(Y=df$Y,A=df$A,ps=ps_data$ps))
+  start <- Sys.time()
+  m<- lm(Y ~ A+ ps, data = df)
+  ATE = m$coefficients[2]
+  end <- Sys.time()
+  runtime = end - start
+  return(list(ATE = ATE, runtime = runtime))
 }
 # Output Performance
-matrix(c(),
+matrix(c(Reg_adj(hd,ps_high_data)$ATE,
+         Reg_adj(ld,ps_low_data)$ATE,
+         Reg_adj(hd,ps_high_data)$runtime,
+         Reg_adj(ld,ps_high_data)$runtime),
        nrow = 2,
        byrow = TRUE,
        dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
