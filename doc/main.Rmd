@@ -113,7 +113,7 @@ ps_low_data %>%
 
 # Model 1: Inverse Propensity Weighting and Logistic Regression
 \[
-w_i = \frac{T_i}{e_i}+\frac{1=T_i}{1-\hat{e_i}}
+w_i = \frac{T_i}{\hat{e_i}}+\frac{1-T_i}{1-\hat{e_i}}
 \] 
 where $\hat{e_i}$ is the estimated propensity score for individual $i$.  
 Estimate ATE:  
@@ -126,13 +126,25 @@ Some brief introduction...
 ```{r}
 set.seed(0)
 # Define Data
-
+ld <- lowDim %>% mutate(A = factor(A))
+hd <- highDim %>% mutate(A = factor(A))
 # Write Algorithm
-IPW <- function(){
-  
+IPW <- function(df,ps){
+  start <- Sys.time()
+  ps['weights'] <- ps$treatment/ps$ps+(1-ps$treatment)/(1-ps$ps)
+  treatment <- sum(ps$weights[ps$treatment==1]*df$Y[df$A==1])
+  controll <- sum(ps$weights[ps$treatment==0]*df$Y[df$A==0])
+  ATE <- (treatment-controll)/nrow(df)
+#  ATE <- (sum(ps$weights[ps$treatment==1]*df$Y[df$A==1])-sum(ps$weights[ps$treatment==0]*df$Y[df$A==0]))/nrow(df)
+  end <- Sys.time()
+  runtime = end - start
+  return(list(ATE=ATE,runtime=runtime))
 }
 # Output Performance
-matrix(c(),
+matrix(c(IPW(hd,ps_high_data)$ATE,
+         IPW(ld,ps_low_data)$ATE,
+         IPW(hd,ps_high_data)$runtime,
+         IPW(ld,ps_low_data)$runtime),
        nrow = 2,byrow = TRUE,
        dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
 ```
