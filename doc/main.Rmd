@@ -55,7 +55,7 @@ X_low <- lowDim%>% select(-Y, -A) %>% as.matrix
 
 # Project Overview
 
-We will evaluate four inference algorithm in this project, Inverse Propensity Weighting (IPW) + Logistic Regression, Regression Estimate, Stratification + Logistic Regression, and Regression Adjustment + Logistic Regression. We will compute the average treatment effect (ATE) using the four algorithms on two distinct datasets (low dimension & high dimension), and we will compare their performance and computational efficiency. 
+We will evaluate four inference algorithm in this project, Inverse Propensity Weighting (IPW) + Logistic Regression, Regression Estimate, Stratification + Logistic Regression, and Regression Adjustment + Logistic Regression. We will compute the average treatment effect (ATE) using the four algorithms on two distinct datasets (low dimension & high dimension), and we will compare their performance and computational efficiency.
 
 # Getting Propensity Scores
 We estimate the propensity scores using logistic regression:  
@@ -91,7 +91,7 @@ ps_low_data <- data.frame(ps = predict(ps_low_estimate,type="response"),
                        low_control_ps_mean = mean(ps_low_data[ps_low_data$treatment==0,]$ps)))
 
 ## Plot Counts
-ps_high_data %>% 
+ps_high_data %>%
   mutate(treatment = ifelse(treatment == 0, "Control Group", "Treatment Group")) %>%
   ggplot(aes(x=ps))+
   ggtitle("High Dimentional Data")+
@@ -100,7 +100,7 @@ ps_high_data %>%
   geom_histogram(color="white")+
   facet_wrap(~treatment)
 
-ps_low_data %>% 
+ps_low_data %>%
   mutate(treatment = ifelse(treatment == 0, "Control Group", "Treatment Group")) %>%
   ggplot(aes(x=ps))+
   ggtitle("Low Dimential Data")+
@@ -114,7 +114,7 @@ ps_low_data %>%
 # Model 1: Inverse Propensity Weighting and Logistic Regression
 \[
 w_i = \frac{T_i}{e_i}+\frac{1=T_i}{1-\hat{e_i}}
-\] 
+\]
 where $\hat{e_i}$ is the estimated propensity score for individual $i$.  
 Estimate ATE:  
 \[
@@ -149,7 +149,7 @@ matrix(c(),
 \]
 No need for Propensity Score.  
 
-Some brief introduction... 
+Some brief introduction...
 
 ```{r}
 set.seed(0)
@@ -197,7 +197,7 @@ set.seed(0)
 # Write Algorithm
 Strat <- function(){
   start = Sys.time()
-  ATE = 
+  ATE =
   end = Sys.time()
   runtime = end - start
   return(list(ATE = ATE, runtime = runtime))
@@ -212,23 +212,32 @@ matrix(c(),
 # Model 4: Regression Adjustment and Logistic Regression
 
 Regress the outcome variable Y on treatment indicator variable T and the estimated propensity score. Then, the estimated coefficient on the treatment indicator variable would be an estimate of ATE.  
+In this method, we regress the response variable ($Y$) with the treatment variable ($A$) and the propensity scores estimated using our model above, in this case, logistic regression. The estimated coefficient of the treatment variable ($A$) is then an estimate of the ATE.
 
-Some brief introduction...
+D’Agostino (1998) and Austin (2011) compare regression adjustment with more traditional propensity score methods. One of the main advantages of the regression adjustment is in its simplicity in execution, in which one performs a somewhat basic linear regression model on two covariates and one response variable.
 
+However, depending on the size of the dataset, this may run into computation issues as linear regression involves finding the inverse of a matrix. Additionally, regression adjustment may also not be helpful in cases where there is a strong separation between the two groups.
+
+No such issues were present in this setup given that both datasets had a relatively small number of observations and there is no clear separation between the two groups
 ```{r}
 set.seed(0)
 # Define Data
 
 # Write Algorithm
-Reg_adj <- function(){
+Reg_adj <- function(df,ps_data){
+  df<- data.frame(cbind(Y=df$Y,A=df$A,ps=ps_data$ps))
   start <- Sys.time()
-  ATE <- 
+  m<- lm(Y ~ A+ ps, data = df)
+  ATE = m$coefficients[2]
   end <- Sys.time()
-  runtime <- end - start
+  runtime = end - start
   return(list(ATE = ATE, runtime = runtime))
 }
 # Output Performance
-matrix(c(),
+matrix(c(Reg_adj(hd,ps_high_data)$ATE,
+         Reg_adj(ld,ps_low_data)$ATE,
+         Reg_adj(hd,ps_high_data)$runtime,
+         Reg_adj(ld,ps_high_data)$runtime),
        nrow = 2,
        byrow = TRUE,
        dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
@@ -252,21 +261,21 @@ Performance = squared difference of true ATE and estimated ATE
 Run time (in seconds)
 ```{r Comparing Result, echo=FALSE}
 high_dim_result <- data.frame(
-                               Model = c("Inverse Propensity Weighting (IPW) + Logistic Regression", 
-                                         "Regression Estimate", 
-                                         "Stratification + Logistic Regression", 
+                               Model = c("Inverse Propensity Weighting (IPW) + Logistic Regression",
+                                         "Regression Estimate",
+                                         "Stratification + Logistic Regression",
                                          "egression Adjustment + Logistic Regression"),
-                               
+
                                ATE = c(IPW.High.ATE ,
                                        Regression_Estimate(highDim)$ATE,
                                        Strat.High.ATE,
                                        Reg_adj.High.ATE),
-                                       
+
                                Run_Time = c(IPW.High.ATE,
                                             Regression_Estimate(highDim)$runtime[[1]],
                                             Strat.High.ATE,
                                             Reg_adj.High.ATE),
-                               
+
                                Performance = c(sqrt(abs(-3-IPW.High.ATE)),
                                                sqrt(abs(-3-Regression_Estimate(hd)$ATE)),
                                                sqrt(abs(-3-Strat.High.ATE)),
@@ -274,27 +283,27 @@ high_dim_result <- data.frame(
                                )
 
 low_dim_result <- data.frame(
-                               Model = c("Inverse Propensity Weighting (IPW) + Logistic Regression", 
-                                         "Regression Estimate", 
-                                         "Stratification + Logistic Regression", 
+                               Model = c("Inverse Propensity Weighting (IPW) + Logistic Regression",
+                                         "Regression Estimate",
+                                         "Stratification + Logistic Regression",
                                          "egression Adjustment + Logistic Regression"),
-                               
+
                                ATE = c(IPW.Low.ATE ,
                                        Regression_Estimate(lowDim)$ATE,
                                        Strat.Low.ATE,
                                        Reg_adj.Low.ATE),
-                                       
+
                                Run_Time = c(IPW.Low.ATE,
                                             Regression_Estimate(lowDim)$runtime[[1]],
                                             Strat.Low.ATE,
                                             Reg_adj.Low.ATE),
-                               
+
                                Performance = c(sqrt(abs(-3-IPW.Low.ATE)),
                                                sqrt(abs(-3-Regression_Estimate(ld)$ATE)),
                                                sqrt(abs(-3-Strat.Low.ATE)),
                                                sqrt(abs(-3-Reg_adj.Low.ATE)))
                                )
-``` 
+```
 
 ## Low Dimension Dataset
 ```{r echo=FALSE}
@@ -311,19 +320,19 @@ Model xxx has the best performance on Low Dimension Dataset; model xxx has the b
 # Ploting the Result
 \newpage
 ```{r echo=FALSE}
-high_results <- high_results %>% 
-  mutate(dim = 'high') %>% 
-  mutate(Model = c("IPW +\n Logistic Regression", 
+high_results <- high_results %>%
+  mutate(dim = 'high') %>%
+  mutate(Model = c("IPW +\n Logistic Regression",
                    "Regression Estimate",
-                   "Weighted Regression +\n Logistic Regression", 
-                   "Regression Adjustment +\n Logistic Regression")) %>% 
+                   "Weighted Regression +\n Logistic Regression",
+                   "Regression Adjustment +\n Logistic Regression")) %>%
   mutate(true_ATE = )
-low_results <- low_results %>% 
-  mutate(dim = 'low') %>% 
-  mutate(Model = c("IPW +\n Logistic Regression", 
+low_results <- low_results %>%
+  mutate(dim = 'low') %>%
+  mutate(Model = c("IPW +\n Logistic Regression",
                    "Regression Estimate",
-                   "Weighted Regression +\n Logistic Regression", 
-                   "Regression Adjustment +\n Logistic Regression")) %>% 
+                   "Weighted Regression +\n Logistic Regression",
+                   "Regression Adjustment +\n Logistic Regression")) %>%
   mutate(true_ATE = )
 results <- rbind(low_results, high_results)
 
@@ -362,4 +371,3 @@ ggplot(results, aes(Model, Run.Time, group=dim, col = dim)) +
 Austin, Peter C. 2011. “An Introduction to Propensity Score Methods for Reducing the Effects of Confounding in Observational Studies.” Multivariate Behavioral Research 46 (3): 399–424.  
 Lunceford, Jared K, and Marie Davidian. 2004. “Stratification and Weighting via the Propensity Score in Estimation of Causal Treatment Effects a Comparative Study.” Statistics in Medicine 23 (19): 2937–60.  
 Stuart, Elizabeth A. 2010. “Matching Methods for Causal Inference: A Review and a Look Forward.” Statistical Science: A Review Journal of the Institute of Mathematical Statistics 25 (1): 1.  
-
