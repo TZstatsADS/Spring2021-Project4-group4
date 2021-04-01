@@ -246,7 +246,7 @@ matrix(c(Reg_adj(highDim,ps_high_data)$ATE,
 set.seed(0)
 true_ate <- data.frame(
                        dataset = c("Low Dim.", "High Dim."),
-                       True_ATE = c()
+                       True_ATE = c(2.0901,-54.8558)
                        )
 knitr::kable(true_ate)
 ```
@@ -255,12 +255,14 @@ Performance = squared difference of true ATE and estimated ATE
 Run time (in seconds)
 ```{r Comparing Result, echo=FALSE}
 high_dim_result <- data.frame(
-                               Model = c("Inverse Propensity Weighting (IPW) + Logistic Regression",
+                               Model = c("True ATE",
+                                         "Inverse Propensity Weighting (IPW) + Logistic Regression",
                                          "Regression Estimate",
                                          "Stratification + Logistic Regression",
                                          "egression Adjustment + Logistic Regression"),
 
-                               ATE = c(IPW.High.ATE ,
+                               ATE = c(-54.8558,
+                                       IPW.High.ATE ,
                                        Regression_Estimate(highDim)$ATE,
                                        Strat.High.ATE,
                                        Reg_adj.High.ATE),
@@ -277,12 +279,14 @@ high_dim_result <- data.frame(
                                )
 
 low_dim_result <- data.frame(
-                               Model = c("Inverse Propensity Weighting (IPW) + Logistic Regression",
+                               Model = c("True ATE",
+                                         "Inverse Propensity Weighting (IPW) + Logistic Regression",
                                          "Regression Estimate",
                                          "Stratification + Logistic Regression",
                                          "egression Adjustment + Logistic Regression"),
 
-                               ATE = c(IPW.Low.ATE ,
+                               ATE = c(2.0901,
+                                       IPW.Low.ATE ,
                                        Regression_Estimate(lowDim)$ATE,
                                        Strat.Low.ATE,
                                        Reg_adj.Low.ATE),
