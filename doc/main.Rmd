@@ -240,66 +240,60 @@ matrix(c(Reg_adj(highDim,ps_high_data)$ATE,
 
 # Model Comparisons
 
-## True Average Treatment Effect (ATE)
-
-```{r echo=FALSE}
-set.seed(0)
-true_ate <- data.frame(
-                       dataset = c("Low Dim.", "High Dim."),
-                       True_ATE = c(2.0901,-54.8558)
-                       )
-knitr::kable(true_ate)
-```
-
-Performance = squared difference of true ATE and estimated ATE
-Run time (in seconds)
+Performance is measured by the squared difference of true ATE and estimated ATE
+Run times are in seconds
 ```{r Comparing Result, echo=FALSE}
+set.seed(0)
 high_dim_result <- data.frame(
                                Model = c("True ATE",
                                          "Inverse Propensity Weighting (IPW) + Logistic Regression",
                                          "Regression Estimate",
-                                         "Stratification + Logistic Regression",
+                                         #"Stratification + Logistic Regression",
                                          "egression Adjustment + Logistic Regression"),
 
                                ATE = c(-54.8558,
-                                       IPW.High.ATE ,
+                                       IPW(highDim,ps_high_data)$ATE,
                                        Regression_Estimate(highDim)$ATE,
-                                       Strat.High.ATE,
-                                       Reg_adj.High.ATE),
+                                       #Strat(highDim,ps_high_data)$ATE,
+                                       Reg_adj(highDim,ps_high_data)$ATE),
 
-                               Run_Time = c(IPW.High.ATE,
+                               Run_Time = c("N.A",
+                                            IPW(highDim,ps_high_data)$runtime[[1]],
                                             Regression_Estimate(highDim)$runtime[[1]],
-                                            Strat.High.ATE,
-                                            Reg_adj.High.ATE),
+                                            #Strat(highDim,ps_high_data)$runtime[[1]],
+                                            Reg_adj(highDim,ps_high_data)$runtime[[1]]),
 
-                               Performance = c(sqrt(abs(-3-IPW.High.ATE)),
-                                               sqrt(abs(-3-Regression_Estimate(hd)$ATE)),
-                                               sqrt(abs(-3-Strat.High.ATE)),
-                                               sqrt(abs(-3-Reg_adj.High.ATE)))
+                               Performance = c("N.A.",
+                                               sqrt(abs(-54.8558-IPW(highDim,ps_high_data)$ATE)),
+                                               sqrt(abs(-54.8558-Regression_Estimate(highDim)$ATE)),
+                                               #sqrt(abs(-54.8558-Strat(highDim,ps_high_data)$ATE)),
+                                               sqrt(abs(-54.8558-Reg_adj(highDim,ps_high_data)$ATE)))
                                )
 
 low_dim_result <- data.frame(
                                Model = c("True ATE",
                                          "Inverse Propensity Weighting (IPW) + Logistic Regression",
                                          "Regression Estimate",
-                                         "Stratification + Logistic Regression",
+                                         #"Stratification + Logistic Regression",
                                          "egression Adjustment + Logistic Regression"),
 
                                ATE = c(2.0901,
-                                       IPW.Low.ATE ,
+                                       IPW(lowDim,ps_low_data)$ATE,
                                        Regression_Estimate(lowDim)$ATE,
-                                       Strat.Low.ATE,
-                                       Reg_adj.Low.ATE),
+                                       #Strat(lowDim,ps_low_data)$ATE,
+                                       Reg_adj(lowDim,ps_low_data)$ATE),
 
-                               Run_Time = c(IPW.Low.ATE,
+                               Run_Time = c("N.A",
+                                            IPW(lowDim,ps_low_data)$runtime[[1]],
                                             Regression_Estimate(lowDim)$runtime[[1]],
-                                            Strat.Low.ATE,
-                                            Reg_adj.Low.ATE),
+                                            #Strat(lowDim,ps_low_data)$runtime[[1]],
+                                            Reg_adj(lowDim,ps_low_data)$runtime[[1]]),
 
-                               Performance = c(sqrt(abs(-3-IPW.Low.ATE)),
-                                               sqrt(abs(-3-Regression_Estimate(ld)$ATE)),
-                                               sqrt(abs(-3-Strat.Low.ATE)),
-                                               sqrt(abs(-3-Reg_adj.Low.ATE)))
+                               Performance = c("N.A.",
+                                               sqrt(abs(2.0901-IPW(lowDim,ps_low_data)$ATE)),
+                                               sqrt(abs(2.0901-Regression_Estimate(lowDim)$ATE)),
+                                               #sqrt(abs(2.0901-Strat(lowDim,ps_low_data)$ATE)),
+                                               sqrt(abs(2.0901-Reg_adj(lowDim,ps_low_data)$ATE)))
                                )
 ```
 
@@ -318,24 +312,24 @@ Model xxx has the best performance on Low Dimension Dataset; model xxx has the b
 # Ploting the Result
 \newpage
 ```{r echo=FALSE}
-high_results <- high_results %>%
-  mutate(dim = 'high') %>%
+high_results_plot <- high_dim_result %>%
+  mutate(Dimension = 'high') %>%
   mutate(Model = c("IPW +\n Logistic Regression",
                    "Regression Estimate",
                    "Weighted Regression +\n Logistic Regression",
                    "Regression Adjustment +\n Logistic Regression")) %>%
   mutate(true_ATE = )
-low_results <- low_results %>%
-  mutate(dim = 'low') %>%
+low_results_plot <- low_dim_result %>%
+  mutate(Dimension = 'low') %>%
   mutate(Model = c("IPW +\n Logistic Regression",
                    "Regression Estimate",
                    "Weighted Regression +\n Logistic Regression",
                    "Regression Adjustment +\n Logistic Regression")) %>%
   mutate(true_ATE = )
-results <- rbind(low_results, high_results)
+Final <- rbind(low_results_plot, high_results_plot)
 
 #plots
-ggplot(results, aes(Model, ATE, group=dim, col = dim)) +
+ggplot(Final, aes(Model, ATE, group=Dimension, col = Dimension)) +
   geom_point() +
   geom_line()+
   labs(title='ATE of Different Models',
@@ -345,7 +339,7 @@ ggplot(results, aes(Model, ATE, group=dim, col = dim)) +
   geom_text(aes(label=as.character(round(ATE, 3))), nudge_y = 0.2)+
   theme_light()
 
-ggplot(results, aes(Model, Performance, group=dim, col = dim)) +
+ggplot(Final, aes(Model, Performance, group=Dimension, col = Dimension)) +
   geom_point() +
   geom_line()+
   labs(title='Performance of Different Models',
@@ -354,7 +348,7 @@ ggplot(results, aes(Model, Performance, group=dim, col = dim)) +
        col='Dimension') +
   theme_light()
 
-ggplot(results, aes(Model, Run.Time, group=dim, col = dim)) +
+ggplot(Final, aes(Model, Run.Time, group=Dimension, col = Dimension)) +
   geom_point() +
   geom_line()+
   labs(title='Run Time of Different Models',
