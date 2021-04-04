@@ -194,24 +194,18 @@ Strat <- function(df, ps){
   ATE <- 0
   prev <- 0
   cancatdata <- cbind(df, ps)
-  for (i in 1:5) {
+  for (i in 1:4) {
     ps_str = as.numeric(ps$ps)
-    str_q <- quantile(ps_str, 0.25*(i-1))
+    str_q <- quantile(ps_str, 0.25*i)
     str_data <- cancatdata[cancatdata$ps>=prev,]
     str_data <- str_data[str_q>=str_data$ps,]
     prev = str_q
     temp_t <- sum(str_data$Y[str_data$A==1])
-    temp_t <- temp_t/nrow(str_data[str_data$A==1,])
-    if (nrow(str_data[str_data$A==1,])==0){
-      temp_t = 0
-    }
+    temp_t <- 1/nrow(str_data[str_data$A==1,])*temp_t
     temp_c <- sum(str_data$Y[str_data$A==0])
-    temp_c <- temp_t/nrow(str_data[str_data$A==0,])
-    if (nrow(str_data[str_data$A==0,])==0){
-      temp_c = 0
-    }
+    temp_c <- 1/nrow(str_data[str_data$A==0,])*temp_c
     str_e <- temp_t - temp_c
-    ATE <- ATE + str_e*nrow(str_data)/nrow(str_data)
+    ATE <- ATE + str_e*nrow(str_data)/nrow(df)
   }
   end = Sys.time()
   runtime = end - start
@@ -272,25 +266,25 @@ high_dim_result <- data.frame(
                                Model = c("True ATE",
                                          "Inverse Propensity Weighting (IPW) + Logistic Regression",
                                          "Regression Estimate",
-                                         #"Stratification + Logistic Regression",
-                                         "egression Adjustment + Logistic Regression"),
+                                         "Stratification + Logistic Regression",
+                                         "Regression Adjustment + Logistic Regression"),
 
                                ATE = c(-54.8558,
                                        IPW(highDim,ps_high_data)$ATE,
                                        Regression_Estimate(highDim)$ATE,
-                                       #Strat(highDim,ps_high_data)$ATE,
+                                       Strat(highDim,ps_high_data)$ATE,
                                        Reg_adj(highDim,ps_high_data)$ATE),
 
                                Run_Time = c("N.A",
                                             IPW(highDim,ps_high_data)$runtime[[1]],
                                             Regression_Estimate(highDim)$runtime[[1]],
-                                            #Strat(highDim,ps_high_data)$runtime[[1]],
+                                            Strat(highDim,ps_high_data)$runtime[[1]],
                                             Reg_adj(highDim,ps_high_data)$runtime[[1]]),
 
                                Performance = c("N.A.",
                                                sqrt(abs(-54.8558-IPW(highDim,ps_high_data)$ATE)),
                                                sqrt(abs(-54.8558-Regression_Estimate(highDim)$ATE)),
-                                               #sqrt(abs(-54.8558-Strat(highDim,ps_high_data)$ATE)),
+                                               sqrt(abs(-54.8558-Strat(highDim,ps_high_data)$ATE)),
                                                sqrt(abs(-54.8558-Reg_adj(highDim,ps_high_data)$ATE)))
                                )
 
@@ -298,25 +292,25 @@ low_dim_result <- data.frame(
                                Model = c("True ATE",
                                          "Inverse Propensity Weighting (IPW) + Logistic Regression",
                                          "Regression Estimate",
-                                         #"Stratification + Logistic Regression",
-                                         "egression Adjustment + Logistic Regression"),
+                                         "Stratification + Logistic Regression",
+                                         "Regression Adjustment + Logistic Regression"),
 
                                ATE = c(2.0901,
                                        IPW(lowDim,ps_low_data)$ATE,
                                        Regression_Estimate(lowDim)$ATE,
-                                       #Strat(lowDim,ps_low_data)$ATE,
+                                       Strat(lowDim,ps_low_data)$ATE,
                                        Reg_adj(lowDim,ps_low_data)$ATE),
 
                                Run_Time = c("N.A",
                                             IPW(lowDim,ps_low_data)$runtime[[1]],
                                             Regression_Estimate(lowDim)$runtime[[1]],
-                                            #Strat(lowDim,ps_low_data)$runtime[[1]],
+                                            Strat(lowDim,ps_low_data)$runtime[[1]],
                                             Reg_adj(lowDim,ps_low_data)$runtime[[1]]),
 
                                Performance = c("N.A.",
                                                sqrt(abs(2.0901-IPW(lowDim,ps_low_data)$ATE)),
                                                sqrt(abs(2.0901-Regression_Estimate(lowDim)$ATE)),
-                                               #sqrt(abs(2.0901-Strat(lowDim,ps_low_data)$ATE)),
+                                               sqrt(abs(2.0901-Strat(lowDim,ps_low_data)$ATE)),
                                                sqrt(abs(2.0901-Reg_adj(lowDim,ps_low_data)$ATE)))
                                )
 ```
