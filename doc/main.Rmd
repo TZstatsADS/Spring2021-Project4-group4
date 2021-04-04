@@ -192,14 +192,26 @@ set.seed(0)
 Strat <- function(df, ps){
   start = Sys.time()
   ATE <- 0
+  prev <- 0
+  cancatdata <- cbind(df, ps)
   for (i in 1:5) {
-    str_data = quantile(df, (1/5)*(i-1):(1/5)*i)
-    temp_t <- sum(df$A*df$Y[df$A==1])
-    temp_t <- temp_t/nrow(str_data[str_data$A==1])
-    temp_c <- sum((1-df$A)*df$Y[df$A==0])
-    temp_c <- temp_t/nrow(str_data[str_data$A==0])
+    ps_str = as.numeric(ps$ps)
+    str_q <- quantile(ps_str, 0.25*(i-1))
+    str_data <- cancatdata[cancatdata$ps>=prev,]
+    str_data <- str_data[str_q>=str_data$ps,]
+    prev = str_q
+    temp_t <- sum(str_data$Y[str_data$A==1])
+    temp_t <- temp_t/nrow(str_data[str_data$A==1,])
+    if (nrow(str_data[str_data$A==1,])==0){
+      temp_t = 0
+    }
+    temp_c <- sum(str_data$Y[str_data$A==0])
+    temp_c <- temp_t/nrow(str_data[str_data$A==0,])
+    if (nrow(str_data[str_data$A==0,])==0){
+      temp_c = 0
+    }
     str_e <- temp_t - temp_c
-    ATE <- ATE + str_e*nrow(str_data)/nrow(df)
+    ATE <- ATE + str_e*nrow(str_data)/nrow(str_data)
   }
   end = Sys.time()
   runtime = end - start
