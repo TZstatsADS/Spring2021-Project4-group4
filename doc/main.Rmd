@@ -189,15 +189,27 @@ set.seed(0)
 # Define Data
 
 # Write Algorithm
-Strat <- function(){
+Strat <- function(df, ps){
   start = Sys.time()
-  ATE =
+  ATE <- 0
+  for (i in 1:5) {
+    str_data = quantile(df, (1/5)*(i-1):(1/5)*i)
+    temp_t <- sum(df$A*df$Y[df$A==1])
+    temp_t <- temp_t/nrow(str_data[str_data$A==1])
+    temp_c <- sum((1-df$A)*df$Y[df$A==0])
+    temp_c <- temp_t/nrow(str_data[str_data$A==0])
+    str_e <- temp_t - temp_c
+    ATE <- ATE + str_e*nrow(str_data)/nrow(df)
+  }
   end = Sys.time()
   runtime = end - start
   return(list(ATE = ATE, runtime = runtime))
 }
 # Output Performance
-matrix(c(),
+matrix(c(Strat(highDim,ps_high_data)$ATE,
+         Strat(lowDim,ps_low_data)$ATE,
+         Strat(highDim,ps_high_data)$runtime,
+         Strat(lowDim,ps_low_data)$runtime),
        nrow = 2,
        byrow = TRUE,
        dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
