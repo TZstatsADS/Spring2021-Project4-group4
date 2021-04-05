@@ -33,6 +33,9 @@ Performance -
 | Stratification + Logistic Regressionn      |   x.xxx    |   x.xxx    |
 | Regression Adjustment + Logistic Regressionn      |   x.xxx    |   x.xxx    |
 
+![ATE Comparison (Low Dim)](https://github.com/TZstatsADS/Spring2021-Project4-project5_group4/blob/main/figs/ATE.jpeg)
+![Performance Comparison](https://github.com/TZstatsADS/Spring2021-Project4-project5_group4/blob/main/figs/performance.jpeg)
+![Runtime Comparison](https://github.com/TZstatsADS/Spring2021-Project4-project5_group4/blob/main/figs/runtime.jpeg)
 
 **Contribution statement**: 
 
