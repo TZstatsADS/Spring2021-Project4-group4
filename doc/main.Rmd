@@ -329,52 +329,66 @@ Model xxx has the best performance on Low Dimension Dataset; model xxx has the b
 
 # Ploting the Result
 \newpage
-```{r echo=FALSE}
+```{r, echo=FALSE, warning=FALSE}
 high_results_plot <- high_dim_result %>%
   mutate(Dimension = 'high') %>%
-  mutate(Model = c("IPW +\n Logistic Regression",
-                   "Regression Estimate",
-                   "Weighted Regression +\n Logistic Regression",
-                   "Regression Adjustment +\n Logistic Regression")) %>%
-  mutate(true_ATE = )
+  mutate(Model = c("True ATE",
+                   "IPW \n + LR",
+                   "Regression \n Estimate",
+                   "Stratification \n + LR",
+                   "Regression \n Adjustment \n + LR"))
 low_results_plot <- low_dim_result %>%
   mutate(Dimension = 'low') %>%
-  mutate(Model = c("IPW +\n Logistic Regression",
-                   "Regression Estimate",
-                   "Weighted Regression +\n Logistic Regression",
-                   "Regression Adjustment +\n Logistic Regression")) %>%
-  mutate(true_ATE = )
-Final <- rbind(low_results_plot, high_results_plot)
+  mutate(Model = c("True ATE",
+                   "IPW \n + LR",
+                   "Regression \n Estimate",
+                   "Stratification \n + LR",
+                   "Regression \n Adjustment \n + LR"))
+Summary_df <- rbind(low_results_plot, high_results_plot)
 
 #plots
-ggplot(Final, aes(Model, ATE, group=Dimension, col = Dimension)) +
+jpeg(file="../figs/ATE.jpeg", width = 500, height = 400)
+ggplot(Summary_df, aes(Model, ATE, group=Dimension, col = Dimension)) +
   geom_point() +
   geom_line()+
   labs(title='ATE of Different Models',
        x='',
        y='',
        col='Dimension') +
-  geom_text(aes(label=as.character(round(ATE, 3))), nudge_y = 0.2)+
-  theme_light()
+  geom_text(aes(label=as.character(round(ATE, 3))), nudge_y = 0.2)
+dev.off()
 
-ggplot(Final, aes(Model, Performance, group=Dimension, col = Dimension)) +
+jpeg(file="../figs/performance.jpeg", width = 500, height = 400)
+ggplot(Summary_df, aes(Model, Performance, group=Dimension, col = Dimension)) +
   geom_point() +
   geom_line()+
   labs(title='Performance of Different Models',
        x='',
        y='Sqrt. Error',
-       col='Dimension') +
-  theme_light()
+       col='Dimension')
+dev.off()
 
-ggplot(Final, aes(Model, Run.Time, group=Dimension, col = Dimension)) +
+jpeg(file="../figs/runtime", width = 500, height = 400)
+ggplot(Summary_df, aes(Model, Run_Time, group=Dimension, col = Dimension)) +
   geom_point() +
   geom_line()+
   labs(title='Run Time of Different Models',
        x='',
        y='Run Time (in seconds)',
-       col='Dimension') +
-  theme_light()
+       col='Dimension')
+dev.off()
 ```
+```{r}
+knitr::include_graphics("../figs/ATE.jpeg")
+```
+```{r}
+knitr::include_graphics("../figs/performance.jpeg")
+```
+```{r}
+knitr::include_graphics("../figs/runtime")
+```
+
+
 
 # Reference
 
