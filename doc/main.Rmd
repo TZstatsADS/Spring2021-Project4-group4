@@ -365,25 +365,27 @@ ggplot(Summary_df, aes(Model, ATE, group=Dimension, col = Dimension)) +
        x='',
        y='',
        col='Dimension') +
-  geom_text(aes(label=as.character(round(ATE, 3))), nudge_y = 2)
+  geom_text(aes(label=as.character(ATE)), nudge_y = 2)
 while (!is.null(dev.list()))  dev.off()
 jpeg(filename="../figs/performance.jpeg", width = 500, height = 400,quality = 1300)
-ggplot(Summary_df, aes(Model, Squared_Error, group=Dimension, col = Dimension)) +
+ggplot(Summary_df[c(2,3,4,5,7,8,9,10),], aes(Model, Squared_Error, group=Dimension, col = Dimension)) +
   geom_point() +
   geom_line()+
   labs(title='Performance (Squared Error) of Different Models',
        x='',
        y='Sqrt. Error',
-       col='Dimension')
+       col='Dimension') +
+  geom_text(aes(label=as.character(Squared_Error)), nudge_y = .2)
 while (!is.null(dev.list()))  dev.off()
 jpeg(filename="../figs/runtime.jpeg", width = 500, height = 400,quality = 1300)
-ggplot(Summary_df, aes(Model, Run_Time, group=Dimension, col = Dimension)) +
+ggplot(Summary_df[c(2,3,4,5,7,8,9,10),], aes(Model, Run_Time, group=Dimension, col = Dimension)) +
   geom_point() +
   geom_line()+
   labs(title='Run Time of Different Models',
        x='',
        y='Run Time (in seconds)',
-       col='Dimension')
+       col='Dimension') +
+  geom_text(aes(label=as.character(Run_Time), nudge_y = .6))
 while (!is.null(dev.list()))  dev.off()
 ```
 ```{r,echo=FALSE}
