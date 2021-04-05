@@ -103,15 +103,18 @@ ps_low_data %>%
 
 
 # Model 1: Inverse Propensity Weighting and Logistic Regression
+Inverse Propensity score is one method of propensity score weighting, which is is an alternative way to propensity score matching. It can effectively remove the bias by re-weighting the data with weights inversely proportional to the probability of selection. Averaging with known inverse sampling weights was introduced by Horvitz and Thompson in 1952 and has been further studied in recent KDD papers.
 \[
 w_i = \frac{T_i}{\hat{e_i}}+\frac{1-T_i}{1-\hat{e_i}}
 \]
+the sum of the weights over the controls equals one.
 where $\hat{e_i}$ is the estimated propensity score for individual $i$.  
 Estimate ATE:  
 \[
 \hat{\triangle}_{IPW} = N^{-1}(\sum\limits_{i \in Treated}{w_iY_i}-\sum\limits_{i \in Controlled}{w_iY_i})
 \]
 where the first summation is from the treated group, and the second summation is from the controlled group.  
+However, the IPW will have high variance if p (X) is close to one for some controls.The propensities close to one arise if X nearly separates the controls and exposed or the algorithm used to estimate the propensities is unstable.
 
 ```{r}
 set.seed(0)
