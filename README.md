@@ -17,21 +17,21 @@ Term: Spring 2021
 
 Performance - 
 
-| High Dim. Dataset |
-| Model      |Computational Cost| Performance | 
-| ----------- | ----------- | ------    |
-| Inverse Propensity Weighting (IPW) + Logistic Regression     |  x.xxx    |  x.xxx     | 
-| Regression Estimate (Dont need Propensity Score)      |  x.xxx      |   x.xxx   | 
-| Stratification + Logistic Regressionn      |   x.xxx    |   x.xxx    |
-| Regression Adjustment + Logistic Regressionn      |   x.xxx    |   x.xxx    |
-
 | Low Dim. Dataset |
 | Model      |Computational Cost| Performance | 
 | ----------- | ----------- | ------    |
-| Inverse Propensity Weighting (IPW) + Logistic Regression     |  x.xxx    |  x.xxx     | 
-| Regression Estimate (Dont need Propensity Score)      |  x.xxx      |   x.xxx   | 
-| Stratification + Logistic Regressionn      |   x.xxx    |   x.xxx    |
-| Regression Adjustment + Logistic Regressionn      |   x.xxx    |   x.xxx    |
+| Inverse Propensity Weighting (IPW) + Logistic Regression     |  0    |  0.633     | 
+| Regression Estimate (Dont need Propensity Score)      |  0.014      |   0.187   | 
+| Stratification + Logistic Regressionn      |   0.004    |   0.760   |
+| Regression Adjustment + Logistic Regressionn      |  0    |   0.573    |
+
+| High Dim. Dataset |
+| Model      |Computational Cost| Performance | 
+| ----------- | ----------- | ------    |
+| Inverse Propensity Weighting (IPW) + Logistic Regression     |  0    |  1.648     | 
+| Regression Estimate (Dont need Propensity Score)      |  0.206      |   1.603   | 
+| Stratification + Logistic Regressionn      |   0.034    |   2.352    |
+| Regression Adjustment + Logistic Regressionn      |   0    |   2.136    |
 
 ![ATE Comparison (Low Dim)](https://github.com/TZstatsADS/Spring2021-Project4-project5_group4/blob/main/figs/ATE.jpeg)
 ![Performance Comparison](https://github.com/TZstatsADS/Spring2021-Project4-project5_group4/blob/main/figs/performance.jpeg)
