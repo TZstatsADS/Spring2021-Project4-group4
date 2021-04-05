@@ -264,10 +264,10 @@ Run times are in seconds
 set.seed(0)
 high_dim_result <- data.frame(
                                Model = c("True ATE",
-                                         "Inverse Propensity Weighting (IPW) + Logistic Regression",
+                                         "IPW + LR",
                                          "Regression Estimate",
-                                         "Stratification + Logistic Regression",
-                                         "Regression Adjustment + Logistic Regression"),
+                                         "Stratification + LR",
+                                         "Regression Adjustment + LR"),
 
                                ATE = c(-54.8558,
                                        IPW(highDim,ps_high_data)$ATE,
@@ -290,10 +290,10 @@ high_dim_result <- data.frame(
 
 low_dim_result <- data.frame(
                                Model = c("True ATE",
-                                         "Inverse Propensity Weighting (IPW) + Logistic Regression",
+                                         "IPW + LR",
                                          "Regression Estimate",
-                                         "Stratification + Logistic Regression",
-                                         "Regression Adjustment + Logistic Regression"),
+                                         "Stratification + LR",
+                                         "Regression Adjustment + LR"),
 
                                ATE = c(2.0901,
                                        IPW(lowDim,ps_low_data)$ATE,
