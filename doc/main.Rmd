@@ -187,6 +187,8 @@ $\hat{Q}_j=(\hat{q}_{j-1},\hat{q}_j)$ where $\hat{q}_j$ is the jth sample quanti
 
 Estimation of treatment effects with causal interpretation from raw data is hard because exposure to treatment may be confounded with subject characteristics. Therefore, we need to use stratification to adjust for confounding.
 
+In our implementation, we can select k where k represented the number of the strata. With the help of strata, we can fist cauculate the data which have similar propeties from the propensity score aspect.
+
 ```{r}
 set.seed(0)
 # Define Data
