@@ -325,7 +325,7 @@ knitr::kable(low_dim_result)
 knitr::kable(high_dim_result)
 ```
 
-Model xxx has the best performance on Low Dimension Dataset; model xxx has the best performance on High Dimension Dataset.
+Regression Estimate has the best performance on Low Dimension Dataset; Regression Estimate has the best performance on High Dimension Dataset.
 
 # Ploting the Result
 \newpage
