@@ -198,12 +198,12 @@ set.seed(0)
 # Define Data
 
 # Write Algorithm
-Strat <- function(df, ps){
+Strat <- function(df, ps, k=8){
   start = Sys.time()
   ATE <- 0
   prev <- 0
   cancatdata <- cbind(df, ps)
-  k <- 10
+  #k <- 10
   for (i in 1:k) {
     ps_str = as.numeric(ps$ps)
     str_q <- quantile(ps_str, (1/k)*i)
@@ -280,22 +280,22 @@ high_dim_result <- data.frame(
                                          "Regression Adjustment + LR"),
 
                                ATE = c(-54.8558,
-                                       IPW(highDim,ps_high_data)$ATE,
-                                       Regression_Estimate(highDim)$ATE,
-                                       Strat(highDim,ps_high_data)$ATE,
-                                       Reg_adj(highDim,ps_high_data)$ATE),
+                                       round(IPW(highDim,ps_high_data)$ATE,4),
+                                       round(Regression_Estimate(highDim)$ATE,4),
+                                       round(Strat(highDim,ps_high_data)$ATE,4),
+                                       round(Reg_adj(highDim,ps_high_data)$ATE,4)),
 
                                Run_Time = c("N.A",
-                                            IPW(highDim,ps_high_data)$runtime[[1]],
-                                            Regression_Estimate(highDim)$runtime[[1]],
-                                            Strat(highDim,ps_high_data)$runtime[[1]],
-                                            Reg_adj(highDim,ps_high_data)$runtime[[1]]),
+                                            round(IPW(highDim,ps_high_data)$runtime[[1]],8),
+                                            round(Regression_Estimate(highDim)$runtime[[1]],8),
+                                            round(Strat(highDim,ps_high_data)$runtime[[1]],8),
+                                            round(Reg_adj(highDim,ps_high_data)$runtime[[1]],8)),
 
-                               Performance = c("N.A.",
-                                               sqrt(abs(-54.8558-IPW(highDim,ps_high_data)$ATE)),
-                                               sqrt(abs(-54.8558-Regression_Estimate(highDim)$ATE)),
-                                               sqrt(abs(-54.8558-Strat(highDim,ps_high_data)$ATE)),
-                                               sqrt(abs(-54.8558-Reg_adj(highDim,ps_high_data)$ATE)))
+                               Squared_Error = c("N.A.",
+                                               round(sqrt(abs(-54.8558-IPW(highDim,ps_high_data)$ATE)),4),
+                                               round(sqrt(abs(-54.8558-Regression_Estimate(highDim)$ATE)),4),
+                                               round(sqrt(abs(-54.8558-Strat(highDim,ps_high_data)$ATE)),4),
+                                               round(sqrt(abs(-54.8558-Reg_adj(highDim,ps_high_data)$ATE)),4))
                                )
 
 low_dim_result <- data.frame(
@@ -306,22 +306,22 @@ low_dim_result <- data.frame(
                                          "Regression Adjustment + LR"),
 
                                ATE = c(2.0901,
-                                       IPW(lowDim,ps_low_data)$ATE,
-                                       Regression_Estimate(lowDim)$ATE,
-                                       Strat(lowDim,ps_low_data)$ATE,
-                                       Reg_adj(lowDim,ps_low_data)$ATE),
+                                       round(IPW(lowDim,ps_low_data)$ATE,4),
+                                       round(Regression_Estimate(lowDim)$ATE,4),
+                                       round(Strat(lowDim,ps_low_data)$ATE,4),
+                                       round(Reg_adj(lowDim,ps_low_data)$ATE,4)),
 
                                Run_Time = c("N.A",
-                                            IPW(lowDim,ps_low_data)$runtime[[1]],
-                                            Regression_Estimate(lowDim)$runtime[[1]],
-                                            Strat(lowDim,ps_low_data)$runtime[[1]],
-                                            Reg_adj(lowDim,ps_low_data)$runtime[[1]]),
+                                            round(IPW(lowDim,ps_low_data)$runtime[[1]],8),
+                                            round(Regression_Estimate(lowDim)$runtime[[1]],8),
+                                            round(Strat(lowDim,ps_low_data)$runtime[[1]],8),
+                                            round(Reg_adj(lowDim,ps_low_data)$runtime[[1]],8)),
 
-                               Performance = c("N.A.",
-                                               sqrt(abs(2.0901-IPW(lowDim,ps_low_data)$ATE)),
-                                               sqrt(abs(2.0901-Regression_Estimate(lowDim)$ATE)),
-                                               sqrt(abs(2.0901-Strat(lowDim,ps_low_data)$ATE)),
-                                               sqrt(abs(2.0901-Reg_adj(lowDim,ps_low_data)$ATE)))
+                               Squared_Error = c("N.A.",
+                                               round(sqrt(abs(2.0901-IPW(lowDim,ps_low_data)$ATE)),4),
+                                               round(sqrt(abs(2.0901-Regression_Estimate(lowDim)$ATE)),4),
+                                               round(sqrt(abs(2.0901-Strat(lowDim,ps_low_data)$ATE)),4),
+                                               round(sqrt(abs(2.0901-Reg_adj(lowDim,ps_low_data)$ATE)),4))
                                )
 ```
 
@@ -336,9 +336,9 @@ knitr::kable(high_dim_result)
 ```
 
 Regression Estimate has the best performance on Low Dimension Dataset; Regression Estimate has the best performance on High Dimension Dataset.
+\newpage  
 
 # Ploting the Result
-\newpage
 ```{r, echo=FALSE}
 high_results_plot <- high_dim_result %>%
   mutate(Dimension = 'high') %>%
@@ -357,7 +357,7 @@ low_results_plot <- low_dim_result %>%
 Summary_df <- rbind(low_results_plot, high_results_plot)
 
 #plots
-jpeg(file="../figs/ATE.jpeg", width = 500, height = 400)
+jpeg(filename="../figs/ATE.jpeg", width = 500, height = 400,quality = 1300)
 ggplot(Summary_df, aes(Model, ATE, group=Dimension, col = Dimension)) +
   geom_point() +
   geom_line()+
@@ -366,19 +366,17 @@ ggplot(Summary_df, aes(Model, ATE, group=Dimension, col = Dimension)) +
        y='',
        col='Dimension') +
   geom_text(aes(label=as.character(round(ATE, 3))), nudge_y = 2)
-dev.off()
-
-jpeg(file="../figs/performance.jpeg", width = 500, height = 400)
-ggplot(Summary_df, aes(Model, Performance, group=Dimension, col = Dimension)) +
+while (!is.null(dev.list()))  dev.off()
+jpeg(filename="../figs/performance.jpeg", width = 500, height = 400,quality = 1300)
+ggplot(Summary_df, aes(Model, Squared_Error, group=Dimension, col = Dimension)) +
   geom_point() +
   geom_line()+
   labs(title='Performance (Squared Error) of Different Models',
        x='',
        y='Sqrt. Error',
        col='Dimension')
-dev.off()
-
-jpeg(file="../figs/runtime.jpeg", width = 500, height = 400)
+while (!is.null(dev.list()))  dev.off()
+jpeg(filename="../figs/runtime.jpeg", width = 500, height = 400,quality = 1300)
 ggplot(Summary_df, aes(Model, Run_Time, group=Dimension, col = Dimension)) +
   geom_point() +
   geom_line()+
@@ -386,8 +384,7 @@ ggplot(Summary_df, aes(Model, Run_Time, group=Dimension, col = Dimension)) +
        x='',
        y='Run Time (in seconds)',
        col='Dimension')
-dev.off()
-
+while (!is.null(dev.list()))  dev.off()
 ```
 ```{r,echo=FALSE}
 knitr::include_graphics("../figs/ATE.jpeg")
