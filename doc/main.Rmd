@@ -49,12 +49,13 @@ highDim <- highDim_raw
 We will evaluate four inference algorithm in this project, Inverse Propensity Weighting (IPW) + Logistic Regression, Regression Estimate, Stratification + Logistic Regression, and Regression Adjustment + Logistic Regression. We will compute the average treatment effect (ATE) using the four algorithms on two distinct datasets (low dimension & high dimension), and we will compare their performance and computational efficiency.
 
 # Getting Propensity Scores
-We estimate the propensity scores using logistic regression:  
+By definition, a **propensity score** is the probability of a unit being assigned to a particular treatment given a set of observed covariates, and the purpose to use propensity scores is to reduce selection bias by equating groups based on those covariates. In this project, we estimate the propensity scores using logistic regression:  
 \[logit[Pr(T=1|X)]=\beta_0 + \beta_1x_1 + ... + \beta_px_p
 \]
 \[
 Pr(T=1|X)=\frac{1}{1+e^{-(\beta_0+\beta_1x_1+...+\beta_px_p)}}
-\]
+\]  
+In R, we used the **glm** function to build the logistic regression model based on both High-Dimention and Low-Dimention Dataset, and then we estimated propensity scores for both datasets based on the model. Finally, we did some exploratory data analysis for the propensity scores, summarizing the means and the distributions of them.  
 
 ```{r Getting PS, message=FALSE}
 # High Dimentional Data
@@ -143,23 +144,26 @@ matrix(c(IPW(highDim,ps_high_data)$ATE,
 
 
 # Model 2: Regression Estimate
-
+In this section, we estimated ATE by using a simple regression, and it does not need propensity score.
+Based on Chan et al. (2010),
 \[
-\hat{\triangle}_{reg} = N^{-1}\sum\limits_{i=1}\limits^{N}(\hat{m_1}-\hat{m_0}{(X_i)})
+\hat{\triangle}_{reg_{ATT}}= n_1^{-1} \sum\limits_{exposed}(\hat{m_1}(X_i)-\hat{m_0}(X_i)),n_1=\sum\limits^n\limits_{i=1}Z_i
 \]
-No need for Propensity Score.  
+Here, they estimated ATT, but we are interested in ATE, so the formula that we used is below:
+\[
+\hat{\triangle}_{reg_{ATE}} = N^{-1}\sum\limits_{i=1}\limits^{N}(\hat{m_1}-\hat{m_0}{(X_i)})
+\]
+where $\hat{m_1}$ is the model that using A=1 (Treatment Group), and $\hat{m_1}$ is the model that using A=0 (Controlled Group).
 
 ```{r}
 set.seed(0)
 # Write Algorithm
 Regression_Estimate <- function(df){
-  df_X <- df%>% select(-Y,-A)
   start <- Sys.time()
   model_0 <- glm(Y ~ ., data = subset(df[df$A==0,], select = -A))
   model_1 <- glm(Y ~ ., data = subset(df[df$A==1,], select = -A))
-  Y0_pred <- predict(model_0, newdata = df%>% select(-Y,-A))
-  Y1_pred <- predict(model_1, newdata = df%>% select(-Y,-A))
-  ATE = 1/nrow(df) * sum(Y1_pred - Y0_pred)
+  ATE = 1/nrow(df) * sum(predict(model_1, newdata = df%>% select(-Y,-A)) - 
+                           predict(model_0, newdata = df%>% select(-Y,-A)))
   end <- Sys.time()
   runtime = end - start
   return(list(ATE = ATE, runtime = runtime))
@@ -332,7 +336,7 @@ Regression Estimate has the best performance on Low Dimension Dataset; Regressio
 
 # Ploting the Result
 \newpage
-```{r, echo=FALSE, warning=FALSE, message=FALSE,comment=FALSE,error=FALSE}
+```{r, echo=FALSE}
 high_results_plot <- high_dim_result %>%
   mutate(Dimension = 'high') %>%
   mutate(Model = c("True ATE",
@@ -358,14 +362,14 @@ ggplot(Summary_df, aes(Model, ATE, group=Dimension, col = Dimension)) +
        x='',
        y='',
        col='Dimension') +
-  geom_text(aes(label=as.character(round(ATE, 3))), nudge_y = 0.2)
+  geom_text(aes(label=as.character(round(ATE, 3))), nudge_y = 2)
 dev.off()
 
 jpeg(file="../figs/performance.jpeg", width = 500, height = 400)
 ggplot(Summary_df, aes(Model, Performance, group=Dimension, col = Dimension)) +
   geom_point() +
   geom_line()+
-  labs(title='Performance of Different Models',
+  labs(title='Performance (Squared Error) of Different Models',
        x='',
        y='Sqrt. Error',
        col='Dimension')
@@ -380,6 +384,7 @@ ggplot(Summary_df, aes(Model, Run_Time, group=Dimension, col = Dimension)) +
        y='Run Time (in seconds)',
        col='Dimension')
 dev.off()
+
 ```
 ```{r,echo=FALSE}
 knitr::include_graphics("../figs/ATE.jpeg")
@@ -396,5 +401,9 @@ knitr::include_graphics("../figs/runtime.jpeg")
 # Reference
 
 Austin, Peter C. 2011. “An Introduction to Propensity Score Methods for Reducing the Effects of Confounding in Observational Studies.” Multivariate Behavioral Research 46 (3): 399–424.  
+
+Chan, David, Rong Ge, Ori Gershony, Tim Hesterberg, and Diane Lambert. 2010. “Evaluating Online Ad Campaigns in a Pipeline: Causal Models at Scale.” In Proceedings of the 16th Acm Sigkdd International Conference on Knowledge Discovery and Data Mining, 7–16.  
+
 Lunceford, Jared K, and Marie Davidian. 2004. “Stratification and Weighting via the Propensity Score in Estimation of Causal Treatment Effects a Comparative Study.” Statistics in Medicine 23 (19): 2937–60.  
+
 Stuart, Elizabeth A. 2010. “Matching Methods for Causal Inference: A Review and a Look Forward.” Statistical Science: A Review Journal of the Institute of Mathematical Statistics 25 (1): 1.  
