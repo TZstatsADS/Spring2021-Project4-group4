@@ -18,7 +18,7 @@ Term: Spring 2021
 Performance - 
 
 | Low Dim. Dataset |
-| Model      |Computational Cost| Performance | 
+| Model      |Computational Cost| Performance (Squared Error) | 
 | ----------- | ----------- | ------    |
 | Inverse Propensity Weighting (IPW) + Logistic Regression     |  0    |  0.633     | 
 | Regression Estimate (Dont need Propensity Score)      |  0.014      |   0.187   | 
@@ -26,7 +26,7 @@ Performance -
 | Regression Adjustment + Logistic Regressionn      |  0    |   0.573    |
 
 | High Dim. Dataset |
-| Model      |Computational Cost| Performance | 
+| Model      |Computational Cost| Performance (Squared Error) | 
 | ----------- | ----------- | ------    |
 | Inverse Propensity Weighting (IPW) + Logistic Regression     |  0    |  1.648     | 
 | Regression Estimate (Dont need Propensity Score)      |  0.206      |   1.603   | 
