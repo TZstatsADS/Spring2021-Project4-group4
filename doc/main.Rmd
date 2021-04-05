@@ -329,7 +329,7 @@ Model xxx has the best performance on Low Dimension Dataset; model xxx has the b
 
 # Ploting the Result
 \newpage
-```{r, echo=FALSE, warning=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE,comment=FALSE,error=FALSE}
 high_results_plot <- high_dim_result %>%
   mutate(Dimension = 'high') %>%
   mutate(Model = c("True ATE",
@@ -368,7 +368,7 @@ ggplot(Summary_df, aes(Model, Performance, group=Dimension, col = Dimension)) +
        col='Dimension')
 dev.off()
 
-jpeg(file="../figs/runtime", width = 500, height = 400)
+jpeg(file="../figs/runtime.jpeg", width = 500, height = 400)
 ggplot(Summary_df, aes(Model, Run_Time, group=Dimension, col = Dimension)) +
   geom_point() +
   geom_line()+
@@ -378,14 +378,14 @@ ggplot(Summary_df, aes(Model, Run_Time, group=Dimension, col = Dimension)) +
        col='Dimension')
 dev.off()
 ```
-```{r}
+```{r,echo=FALSE}
 knitr::include_graphics("../figs/ATE.jpeg")
 ```
-```{r}
+```{r,echo=FALSE}
 knitr::include_graphics("../figs/performance.jpeg")
 ```
-```{r}
-knitr::include_graphics("../figs/runtime")
+```{r,echo=FALSE}
+knitr::include_graphics("../figs/runtime.jpeg")
 ```
 
 
