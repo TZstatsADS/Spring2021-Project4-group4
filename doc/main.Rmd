@@ -203,7 +203,6 @@ Strat <- function(df, ps, k=8){
   ATE <- 0
   prev <- 0
   cancatdata <- cbind(df, ps)
-  #k <- 10
   for (i in 1:k) {
     ps_str = as.numeric(ps$ps)
     str_q <- quantile(ps_str, (1/k)*i)
@@ -222,6 +221,14 @@ Strat <- function(df, ps, k=8){
   return(list(ATE = ATE, runtime = runtime))
 }
 # Output Performance
+stra_result_high <- matrix(0, nrow = 10, ncol = 2, dimnames = list(c("1",  "2", "3", "4", "5", "6", "7", "8", "9", "10"), c("ATE","Running Time (secs)")))
+stra_result_low <- matrix(0, nrow = 10, ncol = 2, dimnames = list(c("1",  "2", "3", "4", "5", "6", "7", "8", "9", "10"), c("ATE","Running Time (secs)")))
+for (i in 1:10){
+  stra_result_high[i,] <- c(Strat(highDim,ps_high_data, i)$ATE, Strat(highDim,ps_high_data, i)$runtime)
+  stra_result_low[i,] <- c(Strat(lowDim,ps_low_data, i)$ATE, Strat(lowDim,ps_low_data, i)$runtime)
+}
+stra_result_high
+stra_result_low
 matrix(c(Strat(highDim,ps_high_data)$ATE,
          Strat(lowDim,ps_low_data)$ATE,
          Strat(highDim,ps_high_data)$runtime,
