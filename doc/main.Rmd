@@ -191,7 +191,7 @@ $\hat{Q}_j=(\hat{q}_{j-1},\hat{q}_j)$ where $\hat{q}_j$ is the jth sample quanti
 
 Estimation of treatment effects with causal interpretation from raw data is hard because exposure to treatment may be confounded with subject characteristics. Therefore, we need to use stratification to adjust for confounding.
 
-In our implementation, we can select k where k represented the number of the strata. With the help of strata, we can fist cauculate the data which have similar propeties from the propensity score aspect.
+In our implementation, we can select k where k represented the number of the strata. With the help of strata, we can fist cauculate the data which have similar propeties from the propensity score aspect. We also tested which K value in the formula above has the best performance. In the last part of this section, from the graph, we can see that K=8 should provide the best result (lowest squared error for both high and low dimensional datasets).
 
 ```{r}
 set.seed(0)
@@ -221,21 +221,43 @@ Strat <- function(df, ps, k=8){
   return(list(ATE = ATE, runtime = runtime))
 }
 # Output Performance
-stra_result_high <- matrix(0, nrow = 10, ncol = 2, dimnames = list(c("1",  "2", "3", "4", "5", "6", "7", "8", "9", "10"), c("ATE","Running Time (secs)")))
-stra_result_low <- matrix(0, nrow = 10, ncol = 2, dimnames = list(c("1",  "2", "3", "4", "5", "6", "7", "8", "9", "10"), c("ATE","Running Time (secs)")))
+stra_result_high <- matrix(0, nrow = 10, ncol = 4, 
+                    dimnames = list(c("1","2","3","4","5","6","7","8","9","10"), 
+                                c("K","ATE","Running Time (secs)","Sq_Error")))
+stra_result_low <- matrix(0, nrow = 10, ncol = 4, 
+                    dimnames = list(c("1","2","3","4","5","6","7","8","9","10"),
+                                c("K","ATE","Running Time (secs)","Sq_Error")))
 for (i in 1:10){
-  stra_result_high[i,] <- c(Strat(highDim,ps_high_data, i)$ATE, Strat(highDim,ps_high_data, i)$runtime)
-  stra_result_low[i,] <- c(Strat(lowDim,ps_low_data, i)$ATE, Strat(lowDim,ps_low_data, i)$runtime)
+  stra_result_high[i,] <- c(i,
+                            Strat(highDim,ps_high_data, i)$ATE, 
+                            Strat(highDim,ps_high_data, i)$runtime, 
+                            sqrt(abs(-54.8558-Strat(highDim,ps_high_data, i)$ATE)))
+  stra_result_low[i,] <- c(i,
+                           Strat(lowDim,ps_low_data, i)$ATE, 
+                           Strat(lowDim,ps_low_data, i)$runtime,
+                           sqrt(abs(2.0901-Strat(highDim,ps_high_data, i)$ATE)))
 }
-stra_result_high
-stra_result_low
+stra_result_high <- as.data.frame(stra_result_high)
+stra_result_low <- as.data.frame(stra_result_low)
 matrix(c(Strat(highDim,ps_high_data)$ATE,
          Strat(lowDim,ps_low_data)$ATE,
          Strat(highDim,ps_high_data)$runtime,
          Strat(lowDim,ps_low_data)$runtime),
        nrow = 2,
        byrow = TRUE,
-       dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
+       dimnames = list(c("ATE","Running Time (secs)"), 
+                       c("High Dimension","Low Dimension")))
+
+# Plot Different K
+Summary_K <-rbind(K_low <- stra_result_low %>% mutate(Dimension = "Low"), 
+                  K_high <- stra_result_high %>% mutate(Dimension="High"))
+ggplot(Summary_K, aes(K, Sq_Error, group=Dimension, col = Dimension)) +
+  geom_point() +
+  geom_line()+
+  labs(title='Squared Error of Different Ks in Stratification',
+       x='',
+       y='',
+       col='Dimension')
 ```
 
 # Model 4: Regression Adjustment and Logistic Regression
@@ -269,7 +291,8 @@ matrix(c(Reg_adj(highDim,ps_high_data)$ATE,
          Reg_adj(lowDim,ps_high_data)$runtime),
        nrow = 2,
        byrow = TRUE,
-       dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
+       dimnames = list(c("ATE","Running Time (secs)"),
+                       c("High Dimension","Low Dimension")))
 ```
 
 
