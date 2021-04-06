@@ -247,7 +247,9 @@ matrix(c(Strat(highDim,ps_high_data)$ATE,
        byrow = TRUE,
        dimnames = list(c("ATE","Running Time (secs)"), 
                        c("High Dimension","Low Dimension")))
+```
 
+```{r, echo=FALSE}
 # Plot Different K
 Summary_K <-rbind(K_low <- stra_result_low %>% mutate(Dimension = "Low"), 
                   K_high <- stra_result_high %>% mutate(Dimension="High"))
