@@ -31,6 +31,10 @@ if(!require("glmnet")){
 if(!require("pryr")){
   install.packages("pryr")
 }
+if(!require("viridis")){
+  install.packages("viridis")
+}
+library(viridis)
 
 library(readr)
 library(tidyverse)
@@ -43,6 +47,7 @@ highDim_raw <- read_csv('../data/highDim_dataset.csv')
 lowDim <- lowDim_raw
 highDim <- highDim_raw
 ```
+\newpage
 
 # Project Overview
 
@@ -85,23 +90,39 @@ ps_low_data <- data.frame(ps = predict(ps_low_estimate,type="response"),
 ## Plot Counts
 ps_high_data %>%
   mutate(treatment = ifelse(treatment == 0, "Control Group", "Treatment Group")) %>%
-  ggplot(aes(x=ps))+
+  ggplot(aes(x=ps, fill=..count..))+
   ggtitle("High Dimentional Data")+
   xlab("Propensity Scores")+
   ylab("Count")+
-  geom_histogram(color="white")+
+  geom_histogram()+
+  scale_fill_gradient("Legend",low = "yellow", high = "blue") +
+  theme_minimal()+
+  theme(axis.line = element_line(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank())+
   facet_wrap(~treatment)
 
 ps_low_data %>%
   mutate(treatment = ifelse(treatment == 0, "Control Group", "Treatment Group")) %>%
-  ggplot(aes(x=ps))+
-  ggtitle("Low Dimential Data")+
+  ggplot(aes(x=ps, fill=..count..))+
+  ggtitle("Low Dimentional Data")+
   xlab("Propensity Scores")+
   ylab("Count")+
-  geom_histogram(color="white")+
+  geom_histogram()+
+  scale_fill_gradient("Legend",low = "yellow", high = "blue") +
+  theme_minimal()+
+  theme(axis.line = element_line(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank())+
   facet_wrap(~treatment)
 ```
+First, it is important to mention that high-dimensional data and low dimensional data have the same distribution for propensity scores regarding the treatment and control group.  
 
+Let's focus on the high-dimensional data. There is a large number of individuals within the control group with propensity score around 0.1, rather than the treatment group have a uniform distribution. Samely, for the low-dimensional data, the control group follows a gaussian-like distribution around 0.10, rather than the treatment group is more uniform across propensity scores.  
 
 # Model 1: Inverse Propensity Weighting and Logistic Regression
 Inverse Propensity score is one method of propensity score weighting, which is is an alternative way to propensity score matching. It can effectively remove the bias by re-weighting the data with weights inversely proportional to the probability of selection. Averaging with known inverse sampling weights was introduced by Horvitz and Thompson in 1952 and has been further studied in recent KDD papers.
@@ -370,8 +391,9 @@ knitr::kable(high_dim_result)
 Regression Estimate has the best performance on Low Dimension Dataset; Regression Estimate has the best performance on High Dimension Dataset.
 \newpage  
 
-# Ploting the Result
+# Plotting the Result
 ```{r, echo=FALSE}
+
 high_results_plot <- high_dim_result %>%
   mutate(Dimension = 'high') %>%
   mutate(Model = c("True ATE",
@@ -389,35 +411,66 @@ low_results_plot <- low_dim_result %>%
 Summary_df <- rbind(low_results_plot, high_results_plot)
 
 #plots
-jpeg(filename="../figs/ATE.jpeg", width = 500, height = 400,quality = 1300)
-ggplot(Summary_df, aes(Model, ATE, group=Dimension, col = Dimension)) +
-  geom_point() +
-  geom_line()+
+true_ATE_high_dim = -54.8558
+true_ATE_low_dim =  2.0901
+
+#plots
+
+jpeg(filename="../figs/ATE.jpeg", width = 500, height = 600,quality = 5000)
+ggplot(Summary_df[c(2,3,4,5,7,8,9,10),], aes(Model, ATE)) +
+  geom_bar(data = high_results_plot, aes(fill="High"),  stat='identity', width = 0.5, alpha = 0.8)+
+  geom_bar(data = low_results_plot, aes(fill="Low"), stat='identity', width = 0.5, alpha = 0.8)+
   labs(title='ATE of Different Models',
        x='',
        y='',
-       col='Dimension') +
-  geom_text(aes(label=as.character(ATE)), nudge_y = 2)
+       col='Dimension') + 
+  geom_hline(yintercept = true_ATE_high_dim,linetype='dashed',  color = "red")+
+  geom_hline(yintercept = true_ATE_low_dim,linetype='dashed',  color = "purple")+
+  theme_minimal()+
+  theme(axis.line = element_line(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank())+
+  geom_text(aes(label=as.character(ATE)), nudge_y = 1)+
+  scale_fill_viridis(discrete=TRUE, direction=-1)
 while (!is.null(dev.list()))  dev.off()
+
 jpeg(filename="../figs/performance.jpeg", width = 500, height = 400,quality = 1300)
 ggplot(Summary_df[c(2,3,4,5,7,8,9,10),], aes(Model, Squared_Error, group=Dimension, col = Dimension)) +
   geom_point() +
-  geom_line()+
+  geom_line(size = 1)+
+  scale_color_viridis(discrete=TRUE)+
   labs(title='Performance (Squared Error) of Different Models',
        x='',
        y='Sqrt. Error',
        col='Dimension') +
-  geom_text(aes(label=as.character(Squared_Error)), nudge_y = .2)
+  theme_minimal()+
+  theme(axis.line = element_line(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank())+
+  geom_text(aes(label=as.character(Squared_Error)), nudge_y = .5)
 while (!is.null(dev.list()))  dev.off()
+
+
 jpeg(filename="../figs/runtime.jpeg", width = 500, height = 400,quality = 1300)
 ggplot(Summary_df[c(2,3,4,5,7,8,9,10),], aes(Model, Run_Time, group=Dimension, col = Dimension)) +
   geom_point() +
-  geom_line()+
+  geom_line(size=1)+
+  scale_color_viridis(discrete=TRUE)+
   labs(title='Run Time of Different Models',
        x='',
        y='Run Time (in seconds)',
        col='Dimension') +
-  geom_text(aes(label=as.character(Run_Time), nudge_y = .6))
+  theme_minimal()+
+  theme(axis.line = element_line(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank())+
+  geom_text(aes(label=as.character(Run_Time), nudge_y = 2))
 while (!is.null(dev.list()))  dev.off()
 ```
 ```{r,echo=FALSE}
@@ -429,7 +482,9 @@ knitr::include_graphics("../figs/performance.jpeg")
 ```{r,echo=FALSE}
 knitr::include_graphics("../figs/runtime.jpeg")
 ```
+\newpage  
 
+# Conclusion
 
 
 # Reference
