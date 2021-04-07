@@ -51,7 +51,7 @@ Zikun Zhuang - be responsible for algorithm 1 - Inverse Propensity Weighting and
 
 Pin-Chun Chen - be responsible for algorithm 3 - Stratification and Logistic Regression, implemented the parameter “k” as the strata for the visualization.   
 
-Jingbin Cao - Structured the Rmd file; Worte Propensity Scores, Wrote algorithm 2 - Regression Estimate, Wrote Model Comparisons, Wrote Conclusion, Wrote Starter-Code for all visualization graphs, Wrote Readme file.  
+Jingbin Cao - be responsible for algorithm 2 - Regression Estimate; structured the Rmd file; worte Propensity Scores, wrote Model Comparisons, wrote Conclusion, wrote Starter-Code for all visualization graphs, and wrote Readme file.  
 
 Weiwei Song - be responsible for algorithm 4 - Regression Estimate and Logistic Regression.  
 
