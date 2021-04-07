@@ -14,7 +14,7 @@ Term: Spring 2021
 	+ Zhuang, Zikun: zz2762@columbia.edu   
 
 + Project summary:  
-In this project, we compare Inverse Propensity Weighting (PS: Logistic Regression), Regression Estimate (doesn't need PS), Stratification (PS: Logistic Regression), and Regression Adjustment (PS: Logistic Regression).
+In this project, we compare Inverse Propensity Weighting (Propensity Scores (PS): Logistic Regression), Regression Estimate (doesn't need PS), Stratification (PS: Logistic Regression), and Regression Adjustment (PS: Logistic Regression).
 
 Performance -
 
