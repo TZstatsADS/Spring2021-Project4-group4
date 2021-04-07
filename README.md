@@ -22,18 +22,18 @@ Performance -
 | Algorithm      |Computational Cost| Performance (Squared Error) |
 | ----------- | ----------- | ------    |
 | Inverse Propensity Weighting (IPW) + Logistic Regression     |  0    |  0.6331     |
+| Regression Adjustment + Logistic Regressionn      |  0.002    |   0.5727    |
 | Regression Estimate (Dont need Propensity Score)      |  0.020      |   0.1872   |
 | Stratification + Logistic Regressionn      |   0.016    |   0.2524   |
-| Regression Adjustment + Logistic Regressionn      |  0.002    |   0.5727    |
 
 
 | High Dim. Dataset |
 | Algorithm      |Computational Cost| Performance (Squared Error) |
 | ----------- | ----------- | ------    |
 | Inverse Propensity Weighting (IPW) + Logistic Regression     |  0.001    |  1.6484     |
+| Regression Adjustment + Logistic Regressionn      |   0.009    |   2.1356    |
 | Regression Estimate (Dont need Propensity Score)      |  0.318      |   1.6034   |
 | Stratification + Logistic Regressionn      |   0.108    |   2.0325    |
-| Regression Adjustment + Logistic Regressionn      |   0.009    |   2.1356    |
 
 + Project Conclusion:  
 Among four different algorithms, Regression Estimate has the best performances with both high and low dimension datasets since it has the lowest squared errors in both cases. However, Regression Adjustment algorithm will take more computational cost than other algorithms (longer run-time). Besides, the squared errors for high dimensional dataset are all larger than the squared errors of low dimensional dataset for all four algorithms. In terms of computational cost, for Regression Estimate and Stratification (with LR), the run-times of high dimensional dataset is longer than the run-times for low dimensional dataset, but for Regression Adjustment (with LR) and IPW (with LR), the run-times of both datasets are similar. However, since the run-times for all four algorithms are lower than 0.18 seconds even when calculating the ATE for high dimentianl dataset, we can ignore their differences in computational costs. Therefore, we think Regression Estimate is the best algorithm when estimating the ATE of both datasets.   
