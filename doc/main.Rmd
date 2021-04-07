@@ -124,7 +124,7 @@ First, it is important to mention that high-dimensional data and low dimensional
 
 Let's focus on the high-dimensional data. There is a large number of individuals within the control group with propensity score around 0.1, rather than the treatment group have a uniform distribution. Samely, for the low-dimensional data, the control group follows a gaussian-like distribution around 0.10, rather than the treatment group is more uniform across propensity scores.  
 
-# Model 1: Inverse Propensity Weighting and Logistic Regression
+# Algorithm 1: Inverse Propensity Weighting and Logistic Regression
 Inverse Propensity score is one method of propensity score weighting, which is is an alternative way to propensity score matching. It can effectively remove the bias by re-weighting the data with weights inversely proportional to the probability of selection. Averaging with known inverse sampling weights was introduced by Horvitz and Thompson in 1952 and has been further studied in recent KDD papers.
 \[
 w_i = \frac{T_i}{\hat{e_i}}+\frac{1-T_i}{1-\hat{e_i}}
@@ -140,8 +140,6 @@ However, the IPW will have high variance if p (X) is close to one for some contr
 
 ```{r}
 set.seed(0)
-# Define Data
-
 # Write Algorithm
 IPW <- function(df,ps){
   start <- Sys.time()
@@ -164,7 +162,7 @@ matrix(c(IPW(highDim,ps_high_data)$ATE,
 
 
 
-# Model 2: Regression Estimate
+# Algorithm 2: Regression Estimate
 In this section, we estimated ATE by using a simple regression, and it does not need propensity score.
 Based on Chan et al. (2010),
 \[
@@ -200,7 +198,7 @@ matrix(c(Regression_Estimate(highDim)$ATE,
          dimnames = list(c("ATE","Running Time (secs)"), c("High Dimension","Low Dimension")))
 ```
 
-# Model 3: Stratification and Logistic Regression
+# Algorithm 3: Stratification and Logistic Regression
 
 \[
 \hat{\triangle}_S = \sum\limits^K\limits_{j = 1} \frac{N_j}{N}(N_{1j}^{-1} \sum\limits^{N}\limits_{i=1}T_iY_iI(\hat{e}_i \in \hat{Q_j})-N_{0j}^{-1}\sum\limits^{N}\limits_{i=1}(1-T_i)Y_iI(\hat{e}_i \in \hat{Q}_j))
@@ -216,8 +214,6 @@ In our implementation, we can select k where k represented the number of the str
 
 ```{r}
 set.seed(0)
-# Define Data
-
 # Write Algorithm
 Strat <- function(df, ps, k=8){
   start = Sys.time()
@@ -283,7 +279,7 @@ ggplot(Summary_K, aes(K, Sq_Error, group=Dimension, col = Dimension)) +
        col='Dimension')
 ```
 
-# Model 4: Regression Adjustment and Logistic Regression
+# Algorithm 4: Regression Adjustment and Logistic Regression
 
 Regress the outcome variable Y on treatment indicator variable T and the estimated propensity score. Then, the estimated coefficient on the treatment indicator variable would be an estimate of ATE.  
 In this method, we regress the response variable ($Y$) with the treatment variable ($A$) and the propensity scores estimated using our model above, in this case, logistic regression. The estimated coefficient of the treatment variable ($A$) is then an estimate of the ATE.
@@ -295,8 +291,6 @@ However, depending on the size of the dataset, this may run into computation iss
 No such issues were present in this setup given that both datasets had a relatively small number of observations and there is no clear separation between the two groups
 ```{r}
 set.seed(0)
-# Define Data
-
 # Write Algorithm
 Reg_adj <- function(df,ps_data){
   df<- data.frame(cbind(Y=df$Y,A=df$A,ps=ps_data$ps))
@@ -318,15 +312,14 @@ matrix(c(Reg_adj(highDim,ps_high_data)$ATE,
                        c("High Dimension","Low Dimension")))
 ```
 
-
+\newpage
 # Model Comparisons
 
-Performance is measured by the squared difference of true ATE and estimated ATE
-Run times are in seconds
+Performance is measured by the squared differences of true ATEs and estimated ATEs for all four algorithms, and run-times are measured in seconds.
 ```{r Comparing Result, echo=FALSE}
 set.seed(0)
 high_dim_result <- data.frame(
-                               Model = c("True ATE",
+                               Algorithm = c("True ATE",
                                          "IPW + LR",
                                          "Regression Estimate",
                                          "Stratification + LR",
@@ -352,7 +345,7 @@ high_dim_result <- data.frame(
                                )
 
 low_dim_result <- data.frame(
-                               Model = c("True ATE",
+                               Algorithm = c("True ATE",
                                          "IPW + LR",
                                          "Regression Estimate",
                                          "Stratification + LR",
@@ -387,8 +380,7 @@ knitr::kable(low_dim_result)
 ```{r echo=FALSE}
 knitr::kable(high_dim_result)
 ```
-
-Regression Estimate has the best performance on Low Dimension Dataset; Regression Estimate has the best performance on High Dimension Dataset.
+From the tables above, we can find that Regression Estimate has the best performance on both Low and High Dimensional Datasets in terms of the lowest squared errors in both cases.  
 \newpage  
 
 # Plotting the Result
@@ -396,14 +388,14 @@ Regression Estimate has the best performance on Low Dimension Dataset; Regressio
 
 high_results_plot <- high_dim_result %>%
   mutate(Dimension = 'high') %>%
-  mutate(Model = c("True ATE",
+  mutate(Algorithm = c("True ATE",
                    "IPW \n + LR",
                    "Regression \n Estimate",
                    "Stratification \n + LR",
                    "Regression \n Adjustment \n + LR"))
 low_results_plot <- low_dim_result %>%
   mutate(Dimension = 'low') %>%
-  mutate(Model = c("True ATE",
+  mutate(Algorithm = c("True ATE",
                    "IPW \n + LR",
                    "Regression \n Estimate",
                    "Stratification \n + LR",
@@ -417,7 +409,7 @@ true_ATE_low_dim =  2.0901
 #plots
 
 jpeg(filename="../figs/ATE.jpeg", width = 500, height = 600,quality = 5000)
-ggplot(Summary_df[c(2,3,4,5,7,8,9,10),], aes(Model, ATE)) +
+ggplot(Summary_df[c(2,3,4,5,7,8,9,10),], aes(Algorithm, ATE)) +
   geom_bar(data = high_results_plot, aes(fill="High"),  stat='identity', width = 0.5, alpha = 0.8)+
   geom_bar(data = low_results_plot, aes(fill="Low"), stat='identity', width = 0.5, alpha = 0.8)+
   labs(title='ATE of Different Models',
@@ -437,7 +429,7 @@ ggplot(Summary_df[c(2,3,4,5,7,8,9,10),], aes(Model, ATE)) +
 while (!is.null(dev.list()))  dev.off()
 
 jpeg(filename="../figs/performance.jpeg", width = 500, height = 400,quality = 1300)
-ggplot(Summary_df[c(2,3,4,5,7,8,9,10),], aes(Model, Squared_Error, group=Dimension, col = Dimension)) +
+ggplot(Summary_df[c(2,3,4,5,7,8,9,10),], aes(Algorithm, Squared_Error, group=Dimension, col = Dimension)) +
   geom_point() +
   geom_line(size = 1)+
   scale_color_viridis(discrete=TRUE)+
@@ -456,7 +448,7 @@ while (!is.null(dev.list()))  dev.off()
 
 
 jpeg(filename="../figs/runtime.jpeg", width = 500, height = 400,quality = 1300)
-ggplot(Summary_df[c(2,3,4,5,7,8,9,10),], aes(Model, Run_Time, group=Dimension, col = Dimension)) +
+ggplot(Summary_df[c(2,3,4,5,7,8,9,10),], aes(Algorithm, Run_Time, group=Dimension, col = Dimension)) +
   geom_point() +
   geom_line(size=1)+
   scale_color_viridis(discrete=TRUE)+
