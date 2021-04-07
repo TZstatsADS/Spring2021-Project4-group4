@@ -75,7 +75,7 @@ Pr(T=1|X)=\frac{1}{1+e^{-(\beta_0+\beta_1x_1+...+\beta_px_p)}}
 
 ## Getting PS
 
-In R, we used the **glm** function to build the logistic regression model based on both High-Dimention and Low-Dimention Dataset, and then we estimated propensity scores for both datasets based on the model. Finally, we did some exploratory data analysis for the propensity scores, summarizing the means and the distributions of them.  
+In R, we used the **glm** function to build the logistic regression model based on both High-Dimensional and Low-Dimensional datasets. Then, based on the logistic regression model obtaines, we estimated propensity scores for all individuals present in both datasets. Finally, we conducted some exploratory data analysis on the propensity scores distribution among each treated and control groups of each low and high dimensional data.  
 
 ```{r Getting PS, message=FALSE}
 # High Dimentional Data
@@ -145,6 +145,7 @@ knitr::include_graphics("../figs/ps_high.jpeg")
 First, it is important to mention that high-dimensional data and low dimensional data have the same distribution for propensity scores regarding both treatment and control groups. For the high-dimensional data, there is a large number of individuals within the control group with propensity score around 0.1, rather than the treatment group have a uniform distribution. Samely, for the low-dimensional data, the control group follows a gaussian-like distribution around 0.10, rather than the treatment group is more uniform across propensity scores. Therefore, in order to evaluate the average true effect of the treatment on these populations, we need to reduce the bias present in the data by using several different algorithms presented below. 
 
 # Algorithm 1: Inverse Propensity Weighting and Logistic Regression
+
 Inverse Propensity score is one method of propensity score weighting, which is is an alternative way to propensity score matching. It can effectively remove the bias by re-weighting the data with weights inversely proportional to the probability of selection. Averaging with known inverse sampling weights was introduced by Horvitz and Thompson in 1952 and has been further studied in recent KDD papers.
 \[
 w_i = \frac{T_i}{\hat{e_i}}+\frac{1-T_i}{1-\hat{e_i}}
@@ -156,7 +157,8 @@ Estimate ATE:
 \hat{\triangle}_{IPW} = N^{-1}(\sum\limits_{i \in Treated}{w_iY_i}-\sum\limits_{i \in Controlled}{w_iY_i})
 \]
 where the first summation is from the treated group, and the second summation is from the controlled group.  
-However, the IPW will have high variance if p (X) is close to one for some controls.The propensities close to one arise if X nearly separates the controls and exposed or the algorithm used to estimate the propensities is unstable.
+
+This method presents the advantage of using all the data available, and being very efficient in reducing the bias of the data. However, the main drawback of this method is that the IPW will have high variance if p (X) is close to one for some controls. The propensities close to one arise if X nearly separates the controls and exposed or the algorithm used to estimate the propensities is unstable.  
 
 ```{r}
 set.seed(0)
@@ -183,16 +185,16 @@ matrix(c(IPW(highDim,ps_high_data)$ATE,
 
 
 # Algorithm 2: Regression Estimate
-In this section, we estimated ATE by using a simple regression, and it does not need propensity score.
-Based on Chan et al. (2010),
+
+In this section, we estimated ATE by using a simple regression, not based on the propensity score. The formulas below were exctracted from the research paper written by Chan et al. (2010),
 \[
 \hat{\triangle}_{reg_{ATT}}= n_1^{-1} \sum\limits_{exposed}(\hat{m_1}(X_i)-\hat{m_0}(X_i)),n_1=\sum\limits^n\limits_{i=1}Z_i
 \]
-Here, they estimated ATT, but we are interested in ATE, so the formula that we used is below:
+The formula above is used for ATT calcultions. However, for our purpose, we are more intereste in computing the Average True Effect - ATE, which is why we used the formula below instead:
 \[
 \hat{\triangle}_{reg_{ATE}} = N^{-1}\sum\limits_{i=1}\limits^{N}(\hat{m_1}-\hat{m_0}{(X_i)})
 \]
-where $\hat{m_1}$ is the model that using A=1 (Treatment Group), and $\hat{m_1}$ is the model that using A=0 (Controlled Group).
+where $\hat{m_1}$ is the model that using A=1 (Treatment Group), and $\hat{m_1}$ is the model that using A=0 (Controlled Group). This algorithm has the best performance in terms of the lowest squared error, but it will take more computational cost.
 
 ```{r}
 set.seed(0)
@@ -512,8 +514,8 @@ Austin, Peter C. 2011. “An Introduction to Propensity Score Methods for Reduci
 
 Chan, David, Rong Ge, Ori Gershony, Tim Hesterberg, and Diane Lambert. 2010. “Evaluating Online Ad Campaigns in a Pipeline: Causal Models at Scale.” In Proceedings of the 16th Acm Sigkdd International Conference on Knowledge Discovery and Data Mining, 7–16.  
 
+Kuei-Fung Lin and Wei-Chun Huang, 2017. "Propensity score analysis of lung cancer risk in a population with high prevalence of non-smoking related lung cancer". National Library of Medicine.  
+
 Lunceford, Jared K, and Marie Davidian. 2004. “Stratification and Weighting via the Propensity Score in Estimation of Causal Treatment Effects a Comparative Study.” Statistics in Medicine 23 (19): 2937–60.  
 
-Stuart, Elizabeth A. 2010. “Matching Methods for Causal Inference: A Review and a Look Forward.” Statistical Science: A Review Journal of the Institute of Mathematical Statistics 25 (1): 1. 
-
-Kuei-Fung Lin and Wei-Chun Huang, 2017. "Propensity score analysis of lung cancer risk in a population with high prevalence of non-smoking related lung cancer". National Library of Medicine.
+Stuart, Elizabeth A. 2010. “Matching Methods for Causal Inference: A Review and a Look Forward.” Statistical Science: A Review Journal of the Institute of Mathematical Statistics 25 (1): 1.
