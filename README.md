@@ -13,7 +13,8 @@ Term: Spring 2021
 	+ Song, Weiwei: ws2621@columbia.edu
 	+ Zhuang, Zikun: zz2762@columbia.edu   
 
-+ Project summary:  Pairing Combination: 10,15,16,22. Compare Inverse Propensity Weighting (PS: Logistic Regression), Regression Estimate (doesn't need PS), Stratification (PS: Logistic Regression), and Regression Adjustment (PS: Logistic Regression).
++ Project summary:  
+In this project, we compare Inverse Propensity Weighting (PS: Logistic Regression), Regression Estimate (doesn't need PS), Stratification (PS: Logistic Regression), and Regression Adjustment (PS: Logistic Regression).
 
 Performance -
 
@@ -21,20 +22,23 @@ Performance -
 | Algorithm      |Computational Cost| Performance (Squared Error) |
 | ----------- | ----------- | ------    |
 | Inverse Propensity Weighting (IPW) + Logistic Regression     |  0    |  0.6331     |
+| Regression Estimate (Dont need Propensity Score)      |  0.013      |   0.1872   |
+| Stratification + Logistic Regressionn      |   0.008    |   0.2524   |
 | Regression Adjustment + Logistic Regressionn      |  0.001    |   0.5727    |
-| Regression Estimate (Dont need Propensity Score)      |  0.012      |   0.1872   |
-| Stratification + Logistic Regressionn      |   0.007    |   0.2524   |
 
 
 | High Dim. Dataset |
 | Algorithm      |Computational Cost| Performance (Squared Error) |
 | ----------- | ----------- | ------    |
-| Inverse Propensity Weighting (IPW) + Logistic Regression     |  0.0009    |  1.6484     |
-| Regression Adjustment + Logistic Regressionn      |   0.0010    |   2.1356    |
-| Regression Estimate (Dont need Propensity Score)      |  0.1825      |   1.6034   |
-| Stratification + Logistic Regressionn      |   0.0727    |   2.0325    |
+| Inverse Propensity Weighting (IPW) + Logistic Regression     |  0.004    |  1.6484     |
+| Regression Estimate (Dont need Propensity Score)      |  0.179      |   1.6034   |
+| Stratification + Logistic Regressionn      |   0.064    |   2.0325    |
+| Regression Adjustment + Logistic Regressionn      |   0.001    |   2.1356    |
 
-Here are some useful graphs that we constructed from this project:
++ Project Conclusion:  
+Among four different algorithms, IPW (with Logistic Regression (LR)), Regression Estimate, Stratification (with LR), and Regression Adjustment (with LR), Regression Estimate has the best performances with both high and low dimension datasets since it has the lowest squared errors in both cases. However, Regression Adjustment algorithm will take more computational cost than other algorithms (longer run-time). Besides, the squared errors for high dimensional dataset are all larger than the squared errors of low dimensional dataset for all four algorithms. In terms of computational cost, for Regression Estimate and Stratification (with LR), the run-times of high dimensional dataset is longer than the run-times for low dimensional dataset, but for Regression Adjustment (with LR) and IPW (with LR), the run-times of both datasets are similar. However, since the run-times for all four algorithms are lower than 0.18 seconds even when calculating the ATE for high dimentianl dataset, we can ignore their differences in computational costs. Therefore, we think Regression Estimate is the best algorithm when estimating the ATE of both datasets.  
+
++ Here are some useful graphs that we constructed from this project:
 ![ATE Comparison (Low Dim)](https://github.com/TZstatsADS/Spring2021-Project4-project5_group4/blob/main/figs/ATE.jpeg)
 ![Performance Comparison](https://github.com/TZstatsADS/Spring2021-Project4-project5_group4/blob/main/figs/performance.jpeg)
 ![Runtime Comparison](https://github.com/TZstatsADS/Spring2021-Project4-project5_group4/blob/main/figs/runtime.jpeg)
@@ -47,7 +51,7 @@ Zikun Zhuang - be responsible for algorithm 1 - Inverse Propensity Weighting and
 
 Pin-Chun Chen - be responsible for algorithm 3 - Stratification and Logistic Regression, implemented the parameter “k” as the strata for the visualization.   
 
-Jingbin Cao - Structured the Rmd file; Worte Propensity Scores, Wrote algorithm 2 - Regression Estimate, Wrote Model Comparisons, Wrote Conclusion, Wrote Starter-Code for all visualization graphs.  
+Jingbin Cao - Structured the Rmd file; Worte Propensity Scores, Wrote algorithm 2 - Regression Estimate, Wrote Model Comparisons, Wrote Conclusion, Wrote Starter-Code for all visualization graphs, Wrote Readme file.  
 
 Weiwei Song - be responsible for algorithm 4 - Regression Estimate and Logistic Regression.  
 
