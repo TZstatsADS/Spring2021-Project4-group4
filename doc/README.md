@@ -1,3 +1,3 @@
 ### Doc folder
 
-The doc directory contains the report or presentation files. It can have subfolders.  
+Our final report is named main.rmd. Thanks for reading!
