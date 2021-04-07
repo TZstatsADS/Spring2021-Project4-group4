@@ -88,7 +88,7 @@ ps_low_data <- data.frame(ps = predict(ps_low_estimate,type="response"),
 ## Visualize PS
 ```{r, echo=FALSE}
 ## Plot Counts
-jpeg(filename="../figs/ps_high.jpeg", width = 500, height = 300,quality = 4000)
+jpeg(filename="../figs/ps_high.jpeg", width = 500, height = 300,quality = 10000)
 ps_high_data %>%
   mutate(treatment = ifelse(treatment == 0, "Control Group", "Treatment Group")) %>%
   ggplot(aes(x=ps, fill=..count..))+
@@ -106,7 +106,7 @@ ps_high_data %>%
   facet_wrap(~treatment)
 while (!is.null(dev.list()))  dev.off()
 
-jpeg(filename="../figs/ps_low.jpeg", width = 500, height = 300,quality = 4000)
+jpeg(filename="../figs/ps_low.jpeg", width = 500, height = 300,quality = 10000)
 ps_low_data %>%
   mutate(treatment = ifelse(treatment == 0, "Control Group", "Treatment Group")) %>%
   ggplot(aes(x=ps, fill=..count..))+
