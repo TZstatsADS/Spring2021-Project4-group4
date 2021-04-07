@@ -1,3 +1,3 @@
 ### Doc folder
 
-Our final report is named main.rmd. Thanks for reading!
+Our final report is named main.pdf. Thanks for reading!
