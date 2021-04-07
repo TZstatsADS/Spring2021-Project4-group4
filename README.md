@@ -34,9 +34,12 @@ Performance -
 | Regression Estimate (Dont need Propensity Score)      |  0.1825      |   1.6034   |
 | Stratification + Logistic Regressionn      |   0.0727    |   2.0325    |
 
+Here are some useful graphs that we constructed from this project:
 ![ATE Comparison (Low Dim)](https://github.com/TZstatsADS/Spring2021-Project4-project5_group4/blob/main/figs/ATE.jpeg)
 ![Performance Comparison](https://github.com/TZstatsADS/Spring2021-Project4-project5_group4/blob/main/figs/performance.jpeg)
 ![Runtime Comparison](https://github.com/TZstatsADS/Spring2021-Project4-project5_group4/blob/main/figs/runtime.jpeg)
+![PS Low](https://github.com/TZstatsADS/Spring2021-Project4-project5_group4/blob/main/figs/ps_low.jpeg)
+![PS High](https://github.com/TZstatsADS/Spring2021-Project4-project5_group4/blob/main/figs/ps_high.jpeg)
 
 **Contribution statement**: Waiting to upload
 
