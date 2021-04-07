@@ -41,7 +41,18 @@ Here are some useful graphs that we constructed from this project:
 ![PS Low](https://github.com/TZstatsADS/Spring2021-Project4-project5_group4/blob/main/figs/ps_low.jpeg)
 ![PS High](https://github.com/TZstatsADS/Spring2021-Project4-project5_group4/blob/main/figs/ps_high.jpeg)
 
-**Contribution statement**: Waiting to upload
+**Contribution statement**:  
+
+Zikun Zhuang - be responsible for algorithm 1 - Inverse Propensity Weighting and Logistic Regression.  
+
+Pin-Chun Chen - be responsible for algorithm 3 - Stratification and Logistic Regression, implemented the parameter “k” as the strata for the visualization.   
+
+Jingbin Cao - Structured the Rmd file; Worte Propensity Scores, Wrote algorithm 2 - Regression Estimate, Wrote Model Comparisons, Wrote Conclusion, Wrote Starter-Code for all visualization graphs.  
+
+Weiwei Song - be responsible for algorithm 4 - Regression Estimate and Logistic Regression.  
+
+Aurore Gosmant - Responsible for the formatting of the visualizations graphs, relating the project to a concrete medical research case and presentations slides.  
+
 
 Following [suggestions](http://nicercode.github.io/blog/2013-04-05-projects/) by [RICH FITZJOHN](http://nicercode.github.io/about/#Team) (@richfitz). This folder is orgarnized as follows.
 
