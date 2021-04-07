@@ -43,13 +43,13 @@ Here are some useful graphs that we constructed from this project:
 
 **Contribution statement**:  
 
-Zikun Zhuang - be responsible for algorithm 1 - Inverse Propensity Weighting and Logistic Regression  
+Zikun Zhuang - be responsible for algorithm 1 - Inverse Propensity Weighting and Logistic Regression.  
 
 Pin-Chun Chen - be responsible for algorithm 3 - Stratification and Logistic Regression, implemented the parameter “k” as the strata for the visualization.   
 
-Jingbin Cao - Structured the Rmd file; Worte Propensity Scores, Wrote algorithm 2 - Regression Estimate, Wrote Model Comparisons, Wrote Conclusion, Wrote Starter-Code for all visualization graphs  
+Jingbin Cao - Structured the Rmd file; Worte Propensity Scores, Wrote algorithm 2 - Regression Estimate, Wrote Model Comparisons, Wrote Conclusion, Wrote Starter-Code for all visualization graphs.  
 
-Weiwei Song - ve responsible for algorithm 4 - Regression Estimate and Logistic Regression  
+Weiwei Song - be responsible for algorithm 4 - Regression Estimate and Logistic Regression.  
 
 Aurore Gosmant - Responsible for the formatting of the visualizations graphs, relating the project to a concrete medical research case and presentations slides.  
 
