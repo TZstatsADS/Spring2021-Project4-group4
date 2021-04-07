@@ -431,6 +431,11 @@ low_results_plot <- low_dim_result %>%
                    "Regression \n Adjustment \n + LR"))
 Summary_df <- rbind(low_results_plot, high_results_plot)
 
+# Save major dataframes in output folder
+write_csv(Summary_df,file = "../output/final_model_comparison.csv")
+write_csv(ps_high_data, file="../output/ps_high.csv")
+write_csv(ps_low_data,file = "../output/ps_low.csv")
+
 #plots
 true_ATE_high_dim = -54.8558
 true_ATE_low_dim =  2.0901
