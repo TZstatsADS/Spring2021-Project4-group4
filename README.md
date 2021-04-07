@@ -47,13 +47,13 @@ Among four different algorithms, Regression Estimate has the best performances w
 
 **Contribution statement**:  
 
-Zikun Zhuang - be responsible for algorithm 1 - Inverse Propensity Weighting and Logistic Regression.  
+Zikun Zhuang - Responsible for algorithm 1 - Inverse Propensity Weighting and Logistic Regression.  
 
-Pin-Chun Chen - be responsible for algorithm 3 - Stratification and Logistic Regression, implemented the parameter “k” as the strata for the visualization.   
+Pin-Chun Chen - Responsible for algorithm 3 - Stratification and Logistic Regression, implemented the parameter “k” as the strata for the visualization.   
 
-Jingbin Cao - be responsible for algorithm 2 - Regression Estimate; structured the Rmd file; worte Propensity Scores, wrote Model Comparisons, wrote Conclusion, wrote Starter-Code for all visualization graphs, and wrote Readme file.  
+Jingbin Cao - Responsible for algorithm 2 - Regression Estimate; structured the Rmd file; worte Propensity Scores, wrote Model Comparisons, wrote Conclusion, wrote Starter-Code for all visualization graphs, and wrote Readme file.  
 
-Weiwei Song - be responsible for algorithm 4 - Regression Estimate and Logistic Regression.  
+Weiwei Song - Responsible for algorithm 4 - Regression Estimate and Logistic Regression.  
 
 Aurore Gosmant - Responsible for the formatting of the visualizations graphs, relating the project to a concrete medical research case and presentations slides.  
 
