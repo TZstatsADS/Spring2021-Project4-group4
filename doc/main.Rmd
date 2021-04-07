@@ -34,8 +34,8 @@ if(!require("pryr")){
 if(!require("viridis")){
   install.packages("viridis")
 }
-library(viridis)
 
+library(viridis)
 library(readr)
 library(tidyverse)
 library(glmnet)
@@ -53,13 +53,17 @@ highDim <- highDim_raw
 
 We will evaluate four inference algorithm in this project, Inverse Propensity Weighting (IPW) + Logistic Regression, Regression Estimate, Stratification + Logistic Regression, and Regression Adjustment + Logistic Regression. We will compute the average treatment effect (ATE) using the four algorithms on two distinct datasets (low dimension & high dimension), and we will compare their performance and computational efficiency.
 
-# Getting Propensity Scores
+# Propensity Scores
+
 By definition, a **propensity score** is the probability of a unit being assigned to a particular treatment given a set of observed covariates, and the purpose to use propensity scores is to reduce selection bias by equating groups based on those covariates. In this project, we estimate the propensity scores using logistic regression:  
 \[logit[Pr(T=1|X)]=\beta_0 + \beta_1x_1 + ... + \beta_px_p
 \]
 \[
 Pr(T=1|X)=\frac{1}{1+e^{-(\beta_0+\beta_1x_1+...+\beta_px_p)}}
 \]  
+
+## Getting PS
+
 In R, we used the **glm** function to build the logistic regression model based on both High-Dimention and Low-Dimention Dataset, and then we estimated propensity scores for both datasets based on the model. Finally, we did some exploratory data analysis for the propensity scores, summarizing the means and the distributions of them.  
 
 ```{r Getting PS, message=FALSE}
@@ -67,27 +71,24 @@ In R, we used the **glm** function to build the logistic regression model based 
 ps_high_estimate <- glm(data = highDim,
                         formula = A~ . -Y,
                         family=binomial())
-
 ps_high_data <- data.frame(ps = predict(ps_high_estimate,type="response"),
                            treatment = ps_high_estimate$model$A)
-
-
 # Low Dimentional Data
 ps_low_estimate <- glm(data = lowDim,
                        formula = A~ . -Y,
                        family=binomial())
-
 ps_low_data <- data.frame(ps = predict(ps_low_estimate,type="response"),
                           treatment = ps_low_estimate$model$A)
-
-# Visualize Data
-## Show PS means
+# Show PS means
 (ps_means <- data.frame(high_treat_ps_mean = mean(ps_high_data[ps_high_data$treatment==1,]$ps),
                        high_control_ps_mean = mean(ps_high_data[ps_high_data$treatment==0,]$ps),
                        low_treat_ps_mean = mean(ps_low_data[ps_low_data$treatment==1,]$ps),
                        low_control_ps_mean = mean(ps_low_data[ps_low_data$treatment==0,]$ps)))
-
+```
+## Visualize PS
+```{r, echo=FALSE}
 ## Plot Counts
+jpeg(filename="../figs/ps_high.jpeg", width = 500, height = 300,quality = 4000)
 ps_high_data %>%
   mutate(treatment = ifelse(treatment == 0, "Control Group", "Treatment Group")) %>%
   ggplot(aes(x=ps, fill=..count..))+
@@ -103,7 +104,9 @@ ps_high_data %>%
         panel.border = element_blank(),
         panel.background = element_blank())+
   facet_wrap(~treatment)
+while (!is.null(dev.list()))  dev.off()
 
+jpeg(filename="../figs/ps_low.jpeg", width = 500, height = 300,quality = 4000)
 ps_low_data %>%
   mutate(treatment = ifelse(treatment == 0, "Control Group", "Treatment Group")) %>%
   ggplot(aes(x=ps, fill=..count..))+
@@ -119,7 +122,15 @@ ps_low_data %>%
         panel.border = element_blank(),
         panel.background = element_blank())+
   facet_wrap(~treatment)
+while (!is.null(dev.list()))  dev.off()
 ```
+```{r,echo=FALSE}
+knitr::include_graphics("../figs/ps_low.jpeg")
+```
+```{r,echo=FALSE}
+knitr::include_graphics("../figs/ps_high.jpeg")
+```
+\newpage
 First, it is important to mention that high-dimensional data and low dimensional data have the same distribution for propensity scores regarding the treatment and control group.  
 
 Let's focus on the high-dimensional data. There is a large number of individuals within the control group with propensity score around 0.1, rather than the treatment group have a uniform distribution. Samely, for the low-dimensional data, the control group follows a gaussian-like distribution around 0.10, rather than the treatment group is more uniform across propensity scores.  
