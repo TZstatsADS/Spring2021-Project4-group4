@@ -51,7 +51,18 @@ highDim <- highDim_raw
 
 # Project Overview
 
-We will evaluate four inference algorithm in this project, Inverse Propensity Weighting (IPW) + Logistic Regression, Regression Estimate, Stratification + Logistic Regression, and Regression Adjustment + Logistic Regression. We will compute the average treatment effect (ATE) using the four algorithms on two distinct datasets (low dimension & high dimension), and we will compare their performance and computational efficiency.
+Since the 1900’s, associations between tobacco, lung cancer and cardiovascular diseases have been made. Many reports have asserted that tobacco users would live shorter lives, or that tobacco would be a root cause of lung cancer having higher impact on men than women. However, associations had just been made, and causality had never been proven.  
+This is a concrete example where causal inference is crucial in every-day life. To prove a cause-to-effect relation of a particular treatment, two main studies are conductible: observational and experimental studies.  
+
+In experimental studies, it is easy to impose that the probability of being treated or untreated to be the same. Therefore, a subject’s treatment status is random. This equal probability of treatment enables to make a crucial assumption for causal inference, which is that the treated and control groups are alike on all factors except their treatment. This assumption is called the exchangeability between groups. However, there are many times when experimental studies are not feasible or not ethical.  
+
+Therefore, most of causal inference studies conduct observational studies instead of experimental ones. However, one of the biggest challenges with observational studies is that the probability of being treated and untreated is not random.  
+
+Hence, to use observational studies and satisfy the exchangeability condition, the propensity score metric is introduced. The propensity score is a probability, the conditional probability of receiving a treatment given a set of covariates. Using the propensity score computed for each subject regardless of their actual exposure to a treatment to match treated and untreated subjects with similar scores can help mimic experimental data from observational studies.  
+
+For the purpose of this project, we are given low and high dimensional data, where coviariates are already predefined for each individual. After evaluating the propensity scores based on logistic regression for each individual, we will evaluate four inference algorithms, which are Inverse Propensity Weighting (IPW) + Logistic Regression, Regression Estimate, Stratification + Logistic Regression, and Regression Adjustment + Logistic Regression. Using these algorithms on the two distinct datasets (low dimensional and high dimensional), we will compute the Average Treatment Effect (ATE) and will compare their performance and computational efficiency.  
+
+\newpage
 
 # Propensity Scores
 
@@ -131,9 +142,7 @@ knitr::include_graphics("../figs/ps_low.jpeg")
 knitr::include_graphics("../figs/ps_high.jpeg")
 ```
 \newpage
-First, it is important to mention that high-dimensional data and low dimensional data have the same distribution for propensity scores regarding the treatment and control group.  
-
-Let's focus on the high-dimensional data. There is a large number of individuals within the control group with propensity score around 0.1, rather than the treatment group have a uniform distribution. Samely, for the low-dimensional data, the control group follows a gaussian-like distribution around 0.10, rather than the treatment group is more uniform across propensity scores.  
+First, it is important to mention that high-dimensional data and low dimensional data have the same distribution for propensity scores regarding both treatment and control groups. For the high-dimensional data, there is a large number of individuals within the control group with propensity score around 0.1, rather than the treatment group have a uniform distribution. Samely, for the low-dimensional data, the control group follows a gaussian-like distribution around 0.10, rather than the treatment group is more uniform across propensity scores. Therefore, in order to evaluate the average true effect of the treatment on these populations, we need to reduce the bias present in the data by using several different algorithms presented below. 
 
 # Algorithm 1: Inverse Propensity Weighting and Logistic Regression
 Inverse Propensity score is one method of propensity score weighting, which is is an alternative way to propensity score matching. It can effectively remove the bias by re-weighting the data with weights inversely proportional to the probability of selection. Averaging with known inverse sampling weights was introduced by Horvitz and Thompson in 1952 and has been further studied in recent KDD papers.
@@ -282,8 +291,15 @@ matrix(c(Strat(highDim,ps_high_data)$ATE,
 Summary_K <-rbind(K_low <- stra_result_low %>% mutate(Dimension = "Low"), 
                   K_high <- stra_result_high %>% mutate(Dimension="High"))
 ggplot(Summary_K, aes(K, Sq_Error, group=Dimension, col = Dimension)) +
-  geom_point() +
-  geom_line()+
+  geom_point(size = 1) +
+  geom_line(size = 0.7)+
+  scale_color_viridis(discrete=TRUE)+
+  theme_minimal()+
+  theme(axis.line = element_line(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.background = element_blank())+
   labs(title='Squared Error of Different Ks in Stratification',
        x='',
        y='',
